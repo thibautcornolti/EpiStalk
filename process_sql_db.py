@@ -46,7 +46,7 @@ try:
     cursor = cnx.cursor()
     cursor.execute("SELECT id, autologin FROM user")
 
-    for (id, autologin) in cursor:
+    for (id, autologin) in cursor.fetchall():
         cursor.execute(
             """
                 UPDATE user SET
