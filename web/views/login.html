@@ -2,32 +2,42 @@
 <html>
 
 <head>
-	<title>EpiStalk</title>
-	<link rel="stylesheet" type="text/css" href="css/login.css" />
+	<title>TA GROSSE MERE</title>
+	<link rel="stylesheet" type="text/css" href="/public/css/login.css" />
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>	
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </head>
 
 
 <body>
-		<div class="login-page">
-				<div class="form">
-					<form class="register-form">
-						<input type="text" placeholder="name"/>
-						<input type="password" placeholder="password"/>
-						<input type="text" placeholder="email address"/>
-						<button>create</button>
-						<p class="message">Already registered? <a href="#">Sign In</a></p>
-					</form>
-					<form class="login-form">
-						<input type="text" placeholder="username"/>
-						<input type="password" placeholder="password"/>
-						<button>login</button>
-			<script>$('.message a').click(function(){
-   			$('form').animate({height: "toggle", opacity: "toggle"}, "slow");
-				});//# sourceURL=pen.js</script>
-						<p class="message">Not registered? <a href="#">Create an account</a></p>
-					</form>
-				</div>
-			</div>
+	<div class="login-page">
+			<div class="alert alert-danger fade out" id="bsalert">
+					<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+					<strong>INFO!</strong> Email or password are invalid...
+			  </div>
+		<div class="form">
+			<form action='/register' method='post' class="register-form" id="register-form">
+				<input type="text" name="ruser" id="ruser" placeholder="name" /> 
+				<input type="password" name="rpass" id="rpass" placeholder="password" /> 
+				<input type="text" name="raddr" id="raddr" placeholder="email address" />
+				<button>create</button>
+				<p class="message">Already registered?
+					<a href="#">Sign In</a>
+				</p>
+			</form>
+			<form action='/login'  method='post' class="login-form" id="login-form">				
+				<input type="text" name="luser" id="luser" placeholder="username" />
+				<input type="password" name="lpass" id="lpass" placeholder="password" />
+				<button type="submit" onclick="return myFunction()">login</button>
+				<p class="message">Not registered?
+					<a href="#">Create an account</a>
+				</p>
+			</form>
+		</div>
+	</div>
+	<script src="/public/js/login.js"></script>
 </body>
 
 </html>

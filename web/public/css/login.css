@@ -5,6 +5,17 @@
   padding: 8% 0 0;
   margin: auto;
 }
+
+.fade.in {
+  text-align: center;
+  opacity: 1;
+}
+
+.fade.out {
+  text-align: center;
+  opacity: 0;
+}
+
 .form {
   position: relative;
   z-index: 1;
@@ -97,4 +108,14 @@ body {
   font-family: "Roboto", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;      
+}
+
+#luser_error{
+  margin-bottom: 20px;
+  margin: 0px;
+}
+
+#myDiv {
+  display: none;
+  visibility: hidden;
 }
