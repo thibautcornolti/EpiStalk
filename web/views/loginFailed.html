@@ -13,9 +13,9 @@
 
 <body>
 	<div class="login-page">
-		<div class="alert alert-danger fade out" id="bsalert">
+		<div class="alert alert-danger fade in" id="bsalertexist">
 			<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-			<strong>INFO!</strong> Email or password already exist | empty
+			<strong>INFO!</strong> Email or password already exist | are empty
 		</div>
 		<div class="form">
 			<form action='/register' method='post' class="register-form" id="register-form">
@@ -30,7 +30,7 @@
 			<form action='/login' method='post' class="login-form" id="login-form">
 				<input type="text" name="luser" id="luser" placeholder="username" />
 				<input type="password" name="lpass" id="lpass" placeholder="password" />
-				<button type="submit">login</button>
+				<button type="submit" onclick="return myFunction()">login</button>
 				<p class="message">Not registered?
 					<a href="#">Create an account</a>
 				</p>
