@@ -47,19 +47,6 @@ app.get('/home', (req, res) => {
   });
 });
 
-app.get('/admin', (req, res) => {
-  sess = req.session;
-  if (sess.email) {
-    res.write('<h1>Bonjour ' + sess.keys + " " + sess.bite + '</h1><br>');
-    res.end('<a href=' + '/logout' + '>Se déconnecter</a>');
-  }
-  else {
-    res.write('<h1>Erreur vous devez etre connecter.</h1>');
-    res.end('<a href=' + '/' + '>Se connecter</a>');
-  }
-
-});
-
 app.listen(vars.port, vars.hostname, function () {
   console.log("Mon serveur fonctionne sur http://" + vars.hostname + ":" + vars.port + "");
 });
