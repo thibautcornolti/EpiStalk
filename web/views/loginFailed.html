@@ -15,20 +15,19 @@
 	<div class="login-page">
 		<div class="alert alert-danger fade in" id="bsalertexist">
 			<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-			<strong>INFO!</strong> Email or password already exist | are empty
+			<strong>Incorrect credentials</strong>
 		</div>
 		<div class="form">
 			<form action='/register' method='post' class="register-form" id="register-form">
-				<input type="text" name="ruser" id="ruser" placeholder="name" />
+				<input type="text" name="raddr" id="raddr" placeholder="email" />
 				<input type="password" name="rpass" id="rpass" placeholder="password" />
-				<input type="text" name="raddr" id="raddr" placeholder="email address" />
 				<button>create</button>
 				<p class="message">Already registered?
 					<a href="#">Sign In</a>
 				</p>
 			</form>
 			<form action='/login' method='post' class="login-form" id="login-form">
-				<input type="text" name="luser" id="luser" placeholder="username" />
+				<input type="text" name="luser" id="luser" placeholder="email" />
 				<input type="password" name="lpass" id="lpass" placeholder="password" />
 				<button type="submit" onclick="return myFunction()">login</button>
 				<p class="message">Not registered?
