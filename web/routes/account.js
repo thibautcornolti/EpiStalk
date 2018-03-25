@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var account_handling = require('../account_handling.js');
+var account_handling = require('../src/account.js');
 var vars = require('../vars.js');
 
 var con = vars.con;

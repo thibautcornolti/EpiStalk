@@ -2,9 +2,18 @@ var express = require('express');
 var path = require("path");
 var session = require('express-session');
 var bodyParser = require('body-parser');
-var account_route = require('./routes/account.js');
-var account_handling = require('./account_handling.js');
+
 var vars = require('./vars.js');
+var con = vars.con;
+
+con.connect((err, con) => {
+  if (err) throw err;
+  console.log("Connected to " + vars.hostSQL + "!");
+});
+
+var account_route = require('./routes/account.js');
+var account_handling = require('./src/account.js');
+var tasks = require('./src/tasks.js');
 var app = express();
 
 app.set('views', __dirname + '/views');
@@ -19,12 +28,6 @@ app.use(session({
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-var con = vars.con;
-
-con.connect((err, con) => {
-  if (err) throw err;
-  console.log("Connected to " + vars.hostSQL + "!");
-});
 
 app.use('/public', express.static(path.join(__dirname, '/public')));
 app.use('/', account_route);
