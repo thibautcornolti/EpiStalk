@@ -42,7 +42,7 @@ app.get('/', (req, res) => {
 });
 
 app.get('/home', (req, res) => {
-  account_handling.isLogged(req.session.id, con, (user) => {
+    account_handling.isLogged(req.session.id, con, (user) => {
     if (user)
       res.render('home.html', user);
     else

@@ -13,23 +13,23 @@
 
 <body>
 	<div class="login-page">
-		<div class="alert alert-danger fade out" id="bsalert">
-			<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-			<strong>INFO!</strong> Email or password already exist | empty
+		<div class="alert alert-danger fade" id="bsalert">
+			<a href="#" id="close" class="close" aria-label="close">&times;</a>
+			<strong id=alert-msg></strong>
 		</div>
 		<div class="form">
-			<form action='/register' method='post' class="register-form" id="register-form">
-				<input type="text" name="raddr" id="raddr" placeholder="email" />
-				<input type="password" name="rpass" id="rpass" placeholder="password" />
-				<button>create</button>
+			<form class="register-form" id="register-form">
+				<input type="email" name="email" id="remail" placeholder="email" />
+				<input type="password" name="pass" id="rpass" placeholder="password" />
+				<button type="button" id='register'>register</button>
 				<p class="message">Already registered?
 					<a href="#">Sign In</a>
 				</p>
 			</form>
-			<form action='/login' method='post' class="login-form" id="login-form">
-				<input type="text" name="luser" id="luser" placeholder="email" />
-				<input type="password" name="lpass" id="lpass" placeholder="password" />
-				<button type="submit">login</button>
+			<form id='login-form' class="login-form">
+				<input type="email" name="email" id="lemail" placeholder="email" />
+				<input type="password" name="pass" id="lpass" placeholder="password" />
+				<button type="button" id='login'>login</button>
 				<p class="message">Not registered?
 					<a href="#">Create an account</a>
 				</p>

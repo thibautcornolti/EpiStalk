@@ -8,7 +8,7 @@ exports.register = (email, password, con, callback) => {
         con.query(queryString, [email], (err, result) => {
             if (err) throw err;
             if (result.length > 0)
-                return callback("already registered");
+                return callback("Already registered");
             var queryString = "INSERT INTO user (email, password) VALUES (?, ?)";
             con.query(queryString, [email, hashedPassword], (err, result) => {
                 if (err) throw err;
