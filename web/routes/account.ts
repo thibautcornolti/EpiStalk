@@ -1,49 +1,53 @@
-"use strict";
-var express = require("express");
+import express = require('express');
 var router = express.Router();
-var account_handling = require("../src/account");
-var vars_1 = require("../vars");
-router.post('/login', function (req, res) {
+import account_handling = require('../src/account');
+import { con } from '../vars';
+
+router.post('/login', (req, res) => {
     if (req.body.email == undefined || req.body.email.length == 0 ||
         req.body.pass == undefined || req.body.pass.length == 0)
         res.status(403).send({ error: "Empty field" });
     else
-        account_handling.login(req.body.email, req.body.pass, req.session.id, vars_1.con, function (user) {
+        account_handling.login(req.body.email, req.body.pass, req.session.id, con, (user) => {
             if (!user)
                 res.status(403).send({ error: "Invalid credentials" });
             else
                 res.sendStatus(200);
         });
 });
-router.get('/login', function (req, res) {
-    account_handling.isLogged(req.session.id, vars_1.con, function (user) {
+
+router.get('/login', (req, res) => {
+    account_handling.isLogged(req.session.id, con, (user) => {
         if (user)
             res.redirect('home');
         else
             res.render("login.html");
     });
 });
-router.get('/logout', function (req, res) {
-    account_handling.logout(req.session.id, vars_1.con, function () {
+
+router.get('/logout', (req, res) => {
+    account_handling.logout(req.session.id, con, () => {
         res.redirect('/');
     });
 });
-router.post('/register', function (req, res) {
+
+router.post('/register', (req, res) => {
     if (req.body.email == undefined || req.body.email.length == 0 ||
         req.body.pass == undefined || req.body.pass.length == 0)
         res.status(403).send({ error: "Empty field" });
     else
-        account_handling.register(req.body.email, req.body.pass, vars_1.con, function (error) {
+        account_handling.register(req.body.email, req.body.pass, con, (error) => {
             if (error)
                 res.status(403).send({ error: error });
             else
-                account_handling.login(req.body.raddr, req.body.rpass, req.session.id, vars_1.con, function (user) {
+                account_handling.login(req.body.raddr, req.body.rpass, req.session.id, con, (user) => {
                     res.sendStatus(200);
                 });
         });
 });
-router.get('/register', function (req, res) {
+
+router.get('/register', (req, res) => {
     res.redirect('/login');
-});
-module.exports = router;
-//# sourceMappingURL=account.js.map
+})
+
+export = router;

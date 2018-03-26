@@ -1,0 +1,60 @@
+import express = require('express');
+import path = require("path");
+import session = require('express-session');
+import bodyParser = require('body-parser');
+
+import { con, hostSQL, hostname, port } from './vars';
+
+con.connect((err, con) => {
+  if (err) throw err;
+  console.log("Connected to " + hostSQL + "!");
+});
+
+import account_route = require('./routes/account');
+import account_handling = require('./src/account');
+import tasks = require('./src/tasks');
+var app = express();
+
+import ejs = require('ejs')
+
+declare var __dirname
+
+app.set('views', __dirname + '/views');
+app.engine('html', ejs.renderFile);
+app.use(session({
+  name: 'session',
+  secret: 'LdfsfhKirbfg',
+  saveUninitialized: true,
+  resave: true,
+  keys: ['bite']
+}));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+
+app.use('/public', express.static(path.join(__dirname, '/public')));
+app.use('/', account_route);
+
+app.get('/', (req, res) => {
+  account_handling.isLogged(req.session.id, con, (user) => {
+    if (user)
+      res.redirect('home');
+    else
+      res.redirect('login');
+  });
+});
+
+app.get('/home', (req, res) => {
+  account_handling.isLogged(req.session.id, con, (user) => {
+    if (user)
+      res.render('home.html', user);
+    else
+      res.redirect('login');
+  });
+});
+
+app.listen(port, hostname, function () {
+  console.log("Mon serveur fonctionne sur http://" + hostname + ":" + port + "");
+});
+
+export = app;

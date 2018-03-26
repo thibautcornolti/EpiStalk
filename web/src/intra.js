@@ -1,15 +1,15 @@
-var https = require('https');
-var zlib = require('zlib');
-var vars = require('../vars.js');
-
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var https = require("https");
+var zlib = require("zlib");
+var vars = require("../vars");
 var con = vars.con;
-
 function getData(autologin, callback) {
-    let req = https.get(autologin, (res) => {
+    var req = https.get(autologin, function (res) {
         if (!("set-cookie" in res.headers))
-            return callback(undefined);
-        let cookie = res.headers["set-cookie"];
-        option = {
+            return callback(Error("could not get cookie"));
+        var cookie = res.headers["set-cookie"];
+        var option = {
             hostname: "intra.epitech.eu",
             path: "/user/?format=json",
             method: "GET",
@@ -17,12 +17,12 @@ function getData(autologin, callback) {
                 "cookie": cookie,
             },
         };
-        let req = https.request(option, (res) => {
-            let rawData = "";
-            res.on("data", (d) => { rawData += d; });
-            res.on("end", (d) => {
-                let data = JSON.parse(rawData);
-                option = {
+        var req = https.request(option, function (res) {
+            var rawData;
+            res.on("data", function (d) { rawData += d; });
+            res.on("end", function (d) {
+                var data = JSON.parse(rawData);
+                var option = {
                     hostname: "intra.epitech.eu",
                     path: "/user/" + data.login + "/notes/?format=json",
                     method: "GET",
@@ -30,67 +30,69 @@ function getData(autologin, callback) {
                         "cookie": cookie,
                     },
                 };
-                let req = https.request(option, (res) => {
-                    let rawData = "";
-                    res.on("data", (d) => { rawData += d; });
-                    res.on("end", (d) => {
-                        zlib.deflate(new Buffer(rawData), (err, res) => {
-                            if (err) throw err;
+                var req = https.request(option, function (res) {
+                    var rawData;
+                    res.on("data", function (d) { rawData += d; });
+                    res.on("end", function (d) {
+                        zlib.deflate(new Buffer(rawData), function (err, res) {
+                            if (err)
+                                throw err;
                             data.mark = res;
                             return callback(data);
                         });
-                    })
-                })
-                req.on("error", (err) => {
+                    });
+                });
+                req.on("error", function (err) {
                     return callback(undefined);
                 });
                 req.end();
             });
         });
-        req.on("error", (err) => {
+        req.on("error", function (err) {
             return callback(undefined);
         });
         req.end();
     });
-    req.on("error", (err) => {
+    req.on("error", function (err) {
         return callback(undefined);
     });
 }
-
 function setData(id, data) {
-    let queryString = "UPDATE user SET gpa = ?, mark = ?, credit = ?, current_week_log = ? WHERE id = ?";
-    let gpa = 0.0;
-    for (let i = 0; i < data.gpa.length; ++i) {
+    var queryString = "UPDATE user SET gpa = ?, mark = ?, credit = ?, current_week_log = ? WHERE id = ?";
+    var gpa = 0.0;
+    for (var i = 0; i < data.gpa.length; ++i) {
         if (data.gpa[i].cycle == "bachelor")
             gpa = parseFloat(data.gpa[i].gpa);
     }
-    let credit = parseInt(data.credits);
-    let current_week_log = parseFloat(data.nsstat.active);
-    let mark = data.mark;
-    con.query(queryString, [gpa, mark, credit, current_week_log, id], (err, result) => {
-        if (err) throw err;
+    var credit = parseInt(data.credits);
+    var current_week_log = parseFloat(data.nsstat.active);
+    var mark = data.mark;
+    con.query(queryString, [gpa, mark, credit, current_week_log, id], function (err, result) {
+        if (err)
+            throw err;
     });
 }
-
-exports.fillDb = () => {
-    let queryString = "SELECT id, autologin FROM user";
-    con.query(queryString, (err, result) => {
-        if (err) throw err;
-        result.forEach(row => {
+function fillDb() {
+    var queryString = "SELECT id, autologin FROM user";
+    con.query(queryString, function (err, result) {
+        if (err)
+            throw err;
+        result.forEach(function (row) {
             if (row.autologin)
-            getData(row.autologin, (data) => {
-                setData(row.id, data);
-            });
+                getData(row.autologin, function (data) {
+                    setData(row.id, data);
+                });
         });
     });
-};
-
-exports.getLoginWithAutologin = (autologin, callback) => {
-    let req = https.get(autologin, (res) => {
+}
+exports.fillDb = fillDb;
+;
+function getLoginWithAutologin(autologin, callback) {
+    var req = https.get(autologin, function (res) {
         if (!("set-cookie" in res.headers))
-            return callback(undefined);
-        cookie = res.headers["set-cookie"];
-        option = {
+            return callback(Error("could not get cookie"));
+        var cookie = res.headers["set-cookie"];
+        var option = {
             hostname: "intra.epitech.eu",
             path: "/user/?format=json",
             method: "GET",
@@ -98,20 +100,23 @@ exports.getLoginWithAutologin = (autologin, callback) => {
                 "cookie": cookie,
             },
         };
-        let req = https.request(option, (res) => {
-            let rawData = "";
-            res.on("data", (d) => { rawData += d; });
-            res.on("end", (d) => {
-                data = JSON.parse(rawData);
+        var req = https.request(option, function (res) {
+            var rawData;
+            res.on("data", function (d) { rawData += d; });
+            res.on("end", function (d) {
+                var data = JSON.parse(rawData);
                 return callback(data.login);
             });
         });
-        req.on("error", (err) => {
-            return callback(undefined);
+        req.on("error", function (err) {
+            return callback(err);
         });
         req.end();
     });
-    req.on("error", (err) => {
-        return callback(undefined);
+    req.on("error", function (err) {
+        return callback(err);
     });
-};
+}
+exports.getLoginWithAutologin = getLoginWithAutologin;
+;
+//# sourceMappingURL=intra.js.map
