@@ -64,7 +64,7 @@
                             <span class="get-upper-user">
                                 <span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span>
                             </span>&nbsp;
-                                <span class="glyphicon glyphicon-chevron-down"></span>
+                            <span class="glyphicon glyphicon-chevron-down"></span>
                         </a>
                         <ul class="dropdown-menu">
                             <li>
@@ -118,8 +118,14 @@
                 </tr>
             </thead>
             <tbody>
+                <!-- HERE GOES THE RESPONSIVE TAB FROM HOME.JS -->
             </tbody>
         </div>
+        <script>
+            $(document).ready(function () {
+                $('[data-toggle="tooltip"]').tooltip();
+            });
+        </script>
     </table>
 </body>
 
