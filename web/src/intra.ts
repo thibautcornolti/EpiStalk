@@ -18,7 +18,7 @@ function getData(autologin: string, callback: (data: { [key: string]: any } | Er
             },
         };
         let req = https.request(option, (res) => {
-            let rawData: string;
+            let rawData: string = "";
             res.on("data", (d) => { rawData += d; });
             res.on("end", (d) => {
                 let data = JSON.parse(rawData);
@@ -31,7 +31,7 @@ function getData(autologin: string, callback: (data: { [key: string]: any } | Er
                     },
                 };
                 let req = https.request(option, (res) => {
-                    let rawData: string;
+                    let rawData: string = "";
                     res.on("data", (d) => { rawData += d; });
                     res.on("end", (d) => {
                         zlib.deflate(new Buffer(rawData), (err, res) => {
@@ -58,23 +58,27 @@ function getData(autologin: string, callback: (data: { [key: string]: any } | Er
 }
 
 function setData(id, data) {
-    let queryString = "UPDATE user SET gpa = ?, mark = ?, credit = ?, current_week_log = ? WHERE id = ?";
+    let queryString = "UPDATE user SET city = ?, promo = ?, gpa = ?, mark = ?, credit = ?, current_week_log = ? WHERE id = ?";
     let gpa = 0.0;
     for (let i = 0; i < data.gpa.length; ++i) {
         if (data.gpa[i].cycle == "bachelor")
-            gpa = parseFloat(data.gpa[i].gpa);
+        gpa = parseFloat(data.gpa[i].gpa);
     }
+    let city = data.location;
+    let promo = data.promo;
     let credit = parseInt(data.credits);
     let current_week_log = parseFloat(data.nsstat.active);
     let mark = data.mark;
-    con.query(queryString, [gpa, mark, credit, current_week_log, id], (err, result) => {
+    con.query(queryString, [city, promo, gpa, mark, credit, current_week_log, id], (err, result) => {
         if (err) throw err;
     });
 }
 
-function fillDb(): void {
+function fillDb(email?: string): void {
     let queryString = "SELECT id, autologin FROM user";
-    con.query(queryString, (err, result) => {
+    if (email)
+        queryString += " WHERE email = ?";
+    con.query(queryString, [email], (err, result) => {
         if (err) throw err;
         result.forEach(row => {
             if (row.autologin)
@@ -99,7 +103,7 @@ function getLoginWithAutologin(autologin: string, callback: (login: string | Err
             },
         };
         let req = https.request(option, (res) => {
-            let rawData: string;
+            let rawData: string = "";
             res.on("data", (d) => { rawData += d; });
             res.on("end", (d) => {
                 let data = JSON.parse(rawData);

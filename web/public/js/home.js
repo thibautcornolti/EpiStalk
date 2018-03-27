@@ -26,24 +26,96 @@ function setUserFields() {
 
 /* Build the responsive table from /api/users where we get all the users. */
 function buildLeaderboard() {
-    var arr = users;
-    let credit;
-    let log;
-    let gpa;
-    console.log(arr);
-    for (var i = 0; i < arr.length; i++) {
-        let leaderboard = i + 1;
-        credit = (user.credit == undefined) ? credit = arr[i].credit == undefined ? ' data-toggle="tooltip" title="Tu n\'as pas partagé tes crédits">NaN' : '>' + arr[i].credit : credit = arr[i].credit == undefined ? ' data-toggle="tooltip" title="L\'utilisateur n\'a pas partagé ses crédits">?' : '>' + arr[i].credit;
-        gpa = (user.gpa == undefined) ? gpa = arr[i].gpa == undefined ? ' data-toggle="tooltip" title="Tu n\'as pas partagé ton GPA">NaN' : '>' + arr[i].gpa : gpa = arr[i].gpa == undefined ? ' data-toggle="tooltip" title="L\'utilisateur n\'a pas partagé son GPA">?' : '>' + arr[i].gpa;
-        log = (user.log == undefined) ? log = arr[i].current_week_log == undefined ? ' data-toggle="tooltip" title="Tu n\'as pas partagé ton log">NaN' : '>' + arr[i].current_week_log : log = arr[i].current_week_log == undefined ? ' data-toggle="tooltip" title="L\'utilisateur n\'a pas partagé son log">?' : '>' + arr[i].current_week_log;
-        let lastName = arr[i].email.toUpperCase().split('@')[0].split('.')[1];
-        let firstName = arr[i].email.split('.')[0].toUpperCase();
-        let tab = '<tr class="center"><th class="center" scope="row">' + leaderboard + '</th><td>' +
-            firstName + '</td><td>' +
-            lastName + '</td><td' +
-            log + '</td><td' +
-            credit + '</td><td' +
-            gpa + '</td></tr>'
-        $("#tableID").find('tbody').append(tab);
+    $(".spinner-leaderboard").remove();
+    function buildCell(key, endMsg, plurial) {
+        be = (plurial) ? "are" : "is";
+        your = (plurial) ? "yours" : "your";
+        if (!user[key])
+            return '<td><div data-toggle="tooltip" data-placement="top" title="The ' + endMsg + ' ' + be + ' hidden until you share ' + your + '"><a href="/settings">?</a></div></td>';
+        else if (!users[i][key])
+            return '<td><div data-toggle="tooltip" data-placement="top" title="This user has hidden his ' + endMsg + '">?</div></td>';
+        else
+            return '<td>' + users[i][key] + '</td>';
+    }
+    users.sort(function (a, b) {
+        if (!a.gpa)
+            return true;
+        else if (!b.gpa)
+            return false;
+        return a.gpa > a.gpa;
+    });
+    for (var i = 0; i < users.length; i++) {
+        let credit = buildCell("credit", "credits", true);
+        let gpa = buildCell("gpa", "GPA", false);
+        let log = buildCell("current_week_log", "log time", false);
+        let lastName = users[i].email.toUpperCase().split('@')[0].split('.')[1];
+        let firstName = users[i].email.split('.')[0].toUpperCase();
+        let tab = '<tr href="/settings" class="center">' +
+            '<th class="center" scope="row">' + (i + 1) + '</th>' +
+            '<td>' + firstName + '</td>' +
+            '<td>' + lastName + '</td>' +
+            '<td>' + users[i].city + '</td>' +
+            '<td>' + users[i].promo + '</td>' +
+            log + credit + gpa +
+            '</tr>'
+        $("#leaderboard").find('tbody').append(tab);
+    }
+    $(document).ready(function () {
+        $('[data-toggle="tooltip"]').tooltip();
+    });
+}
+
+function sortLeaderboard(n) {
+    var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+    table = document.getElementById("leaderboard");
+    switching = true;
+    dir = "asc";
+    while (switching) {
+        switching = false;
+        rows = table.getElementsByTagName("TR");
+        for (i = 1; i < (rows.length - 1); i++) {
+            shouldSwitch = false;
+            x = rows[i].getElementsByTagName("TD")[n].innerHTML.toLowerCase();
+            y = rows[i + 1].getElementsByTagName("TD")[n].innerHTML.toLowerCase();
+            if (x.indexOf("?") > -1)
+                x = (dir == "asc") ? "\255" : "\000";
+            if (y.indexOf("?") > -1)
+                y = (dir == "desc") ? "\000" : "\255";
+            if (dir == "asc") {
+                if (x > y) {
+                    shouldSwitch = true;
+                    break;
+                }
+            } else if (dir == "desc") {
+                if (x < y) {
+                    shouldSwitch = true;
+                    break;
+                }
+            }
+        }
+        if (shouldSwitch) {
+            rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+            switching = true;
+            switchcount++;
+        } else {
+            if (switchcount == 0 && dir == "asc") {
+                dir = "desc";
+                switching = true;
+            }
+        }
     }
 }
+
+$(document).ready(function () {
+    $("#search-leaderboard").on("keyup", function () {
+        var values = $(this).val().toLowerCase().split(' ');
+        $("#leaderboard tr").filter(function () {
+            if (!$(this).hasClass("header-leaderboard")) {
+                let show = true;
+                for (let i = 0; i < values.length; ++i)
+                    show = ($(this).text().toLowerCase().indexOf(values[i]) < 0) ? false : show;
+                $(this).toggle(show);
+            }
+        });
+    });
+});

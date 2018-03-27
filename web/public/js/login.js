@@ -1,5 +1,5 @@
 $('.message a').click(function () {
-    $('form').animate({ height: "toggle", opacity: "toggle" }, "slow");
+    toggleForm();
 });
 
 $("#login").on("click", login);
@@ -7,6 +7,10 @@ $("#register").on("click", register);
 $('#close').on('click', hideAlert);
 
 $("#close").fadeOut();
+
+function toggleForm() {
+    $('form').animate({ height: "toggle", opacity: "toggle" }, "slow");
+}
 
 function showAlert(msg, level) {
     $("#alert-msg").text(msg);
@@ -48,6 +52,7 @@ function register() {
     $.post("/api/register", { email, pass }, function (data) {
         hideAlert();
         showAlert(data.message, "alert-success");
+        toggleForm();
     }).fail(function (data, textStatus, xhr) {
         hideAlert();
         let res = JSON.parse(data.responseText);
