@@ -16,13 +16,26 @@ router.post('/login', (req, res) => {
         });
 });
 
+router.get('/user', (req, res) => {
+    let token = req.cookies.token
+    if (!token)
+        res.status(403).send({ error: "Token not found" });
+    else {
+        account_handling.getUser(token, con, (err, user) => {
+            if (err)
+                res.status(403).send({ error: "Invalid token" });
+            else
+                res.status(200).send({ user: user });
+        });
+    }
+});
+
 router.get('/users', (req, res) => {
     let token = req.cookies.token
     if (!token)
         res.status(403).send({ error: "Token not found" });
     else {
         account_handling.getAllUsers(token, con, (err, users) => {
-            console.log(users);
             if (err)
                 res.status(403).send({ error: "Invalid token" });
             else
