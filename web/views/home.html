@@ -11,22 +11,12 @@
     <script src="/public/js/home.js"></script>
     <style>
         /* Remove the navbar's default margin-bottom and rounded borders */
-
         .navbar {
             margin-bottom: 0;
             border-radius: 0;
         }
 
-        /* Set black background color, white text and some padding */
-
-        footer {
-            background-color: #555;
-            color: white;
-            padding: 15px;
-        }
-
         /* On small screens, set height to 'auto' for sidenav and grid */
-
         @media screen and (max-width: 767px) {
             .sidenav {
                 height: auto;
@@ -66,6 +56,7 @@
                 <ul class="nav navbar-nav navbar-right">
                     <li>
                         <a id="more-button">
+                            <%= user.email.toUpperCase().split('@')[0] %> &nbsp;
                             <span class="glyphicon glyphicon-chevron-down"></span>
                         </a>
                     </li>
