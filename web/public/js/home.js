@@ -9,9 +9,9 @@ function setUserFields() {
     });
 }
 
-setUserFields();
+/* Build the responsive table from /api/users where we get all the users. */
 function getAllUsers() {
-    $.get("/users", function (data) {
+    $.get("/api/users", function (data) {
         var arr = JSON.parse(JSON.stringify(data.users));
         console.log(arr);
         for (var i = 0; i < arr.length; i++) {
