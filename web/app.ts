@@ -1,6 +1,6 @@
 import express = require('express');
 import cookieParser = require('cookie-parser')
-import path = require("path");
+import path = require('path');
 import session = require('express-session');
 import bodyParser = require('body-parser');
 
@@ -22,13 +22,7 @@ declare var __dirname
 
 app.set('views', __dirname + '/views');
 app.engine('html', ejs.renderFile);
-app.use(session({
-  name: 'session',
-  secret: 'LdfsfhKirbfg',
-  saveUninitialized: true,
-  resave: true,
-  keys: ['bite']
-}));
+app.set('view engine', 'html');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser(secretCookie))
