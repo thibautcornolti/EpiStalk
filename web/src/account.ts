@@ -76,6 +76,21 @@ function getUser(token: string, callback: (error: Error, user?: User) => any) {
     });
 };
 
+function getUserWithEmail(email: string, callback: (error: Error, user?: User) => any) {
+    let queryString = "SELECT city, promo, gpa, credit, current_week_log, show_gpa, show_credit, show_log FROM user WHERE email = ?";
+    con.query(queryString, [email], (err, result_user) => {
+        if (err) return callback(err);
+        if (result_user.length == 0)
+            return callback(Error("user not found"));
+        let city = result_user[0].city;
+        let promo = result_user[0].promo;
+        let gpa = (result_user[0].show_gpa) ? result_user[0].gpa : undefined;
+        let credit = (result_user[0].show_credit) ? result_user[0].credit : undefined;
+        let current_week_log = (result_user[0].show_log) ? result_user[0].current_week_log : undefined;
+        return callback(undefined, new User(email, city, promo, gpa, credit, current_week_log));
+    });
+};
+
 function getAllUsers(token: string, callback: (error: Error, user?: Array<User>) => any) {
     getUser(token, (err, user) => {
         if (err) return callback(err);
@@ -134,4 +149,4 @@ function withAPILogin(req, res, next) {
     }
 }
 
-export { withLogin, withAPILogin, register, login, getUser, getAllUsers }
+export { withLogin, withAPILogin, register, login, getUser, getUserWithEmail, getAllUsers }

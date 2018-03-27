@@ -1,6 +1,6 @@
 import express = require('express');
 var router = express.Router();
-import { withLogin, withAPILogin, login, register, getUser, getAllUsers } from '../src/account';
+import { withLogin, withAPILogin, login, register, getUser, getAllUsers, getUserWithEmail } from '../src/account';
 import { con } from '../vars';
 
 router.post('/api/login', (req, res) => {
@@ -17,7 +17,15 @@ router.post('/api/login', (req, res) => {
 });
 
 router.get('/api/user', withAPILogin, (req, res) => {
-    res.status(200).send({ user: req.user });
+    if (!req.query.login)
+        res.status(200).send({ user: req.user });
+    else
+        getUserWithEmail(req.query.login, (err, user) => {
+            user.gpa = (req.user.gpa) ? user.gpa : undefined;
+            user.credit = (req.user.credit) ? user.credit : undefined;
+            user.current_week_log = (req.user.current_week_log) ? user.current_week_log : undefined;
+            res.status(200).send({ user });
+        });
 });
 
 router.get('/api/users', withAPILogin, (req, res) => {
