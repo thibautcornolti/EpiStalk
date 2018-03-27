@@ -3,7 +3,7 @@ var router = express.Router();
 import account_handling = require('../src/account');
 import { con } from '../vars';
 
-router.post('/login', (req, res) => {
+router.post('/api/login', (req, res) => {
     if (req.body.email == undefined || req.body.email.length == 0 ||
         req.body.pass == undefined || req.body.pass.length == 0)
         res.status(403).send({ warning: "Empty field" });
@@ -16,7 +16,7 @@ router.post('/login', (req, res) => {
         });
 });
 
-router.get('/user', (req, res) => {
+router.get('/api/user', (req, res) => {
     let token = req.cookies.token
     if (!token)
         res.status(403).send({ error: "Token not found" });
@@ -30,7 +30,7 @@ router.get('/user', (req, res) => {
     }
 });
 
-router.get('/users', (req, res) => {
+router.get('/api/users', (req, res) => {
     let token = req.cookies.token
     if (!token)
         res.status(403).send({ error: "Token not found" });
@@ -63,7 +63,7 @@ router.get('/logout', (req, res) => {
     res.redirect('/');
 });
 
-router.post('/register', (req, res) => {
+router.post('/api/register', (req, res) => {
     if (req.body.email == undefined || req.body.email.length == 0 ||
         req.body.pass == undefined || req.body.pass.length == 0)
         res.status(403).send({ warning: "Empty field" });

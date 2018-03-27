@@ -50,7 +50,7 @@ app.get('/home', (req, res) => {
       if (err)
         res.redirect('login');
       else
-        res.render('home.html', { user, oui:["ah", "bh", "obutzr"] });
+        res.render('home.html');
     });
   }
 });
