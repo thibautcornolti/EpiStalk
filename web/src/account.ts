@@ -39,6 +39,19 @@ function register(email: string, password: string, callback: (error?: Error) => 
     });
 };
 
+function newPassword(email: string, newPassword: string, callback: (error: Error) => any): void {
+    bcrypt.hash(newPassword, 5, (err, hashedPassword) => {
+        if (err) return callback(err);
+        let queryString = "UPDATE user SET password = ? WHERE email = ?";
+        con.query(queryString, [hashedPassword, email], (err, result_user) => {
+            if (err) return callback(err);
+            if (result_user.length == 0)
+                return callback(Error("user not found"));
+            return callback(undefined);
+        });
+    });
+}
+
 function login(email: string, password: string, expiresIn: string, callback: (error: Error, token?) => any): void {
     let queryString = "SELECT id, password FROM user WHERE email = ?";
     con.query(queryString, [email], (err, result_user) => {
@@ -149,4 +162,4 @@ function withAPILogin(req, res, next) {
     }
 }
 
-export { withLogin, withAPILogin, register, login, getUser, getUserWithEmail, getAllUsers }
+export { withLogin, withAPILogin, register, login, getUser, getUserWithEmail, getAllUsers, newPassword }
