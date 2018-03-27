@@ -6,8 +6,8 @@ $.get("/api/user", function (data) {
     user = data.user;
     $.get("/api/users", function (data) {
         user = data.users;
+        main();
     })
-    main();
 })
 
 function main() {
