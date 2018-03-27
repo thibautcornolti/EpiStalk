@@ -8,31 +8,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src='public/js/home.js'> </script>
-    <style>
-        /* Remove the navbar's default margin-bottom and rounded borders */
-
-        .navbar {
-            margin-bottom: 0;
-            border-radius: 0;
-        }
-
-        /* On small screens, set height to 'auto' for sidenav and grid */
-
-        @media screen and (max-width: 767px) {
-            .sidenav {
-                height: auto;
-                padding: 15px;
-            }
-            .row.content {
-                height: auto;
-            }
-        }
-
-        .center {
-            text-align: center;
-        }
-    </style>
+    <script src="/public/js/home.js"></script>
 </head>
 
 <body class="noselect">
@@ -52,10 +28,10 @@
                         <a href="#">Home</a>
                     </li>
                     <li>
-                        <a href="#">Marks</a>
+                        <a href="#">Oui</a>
                     </li>
                     <li>
-                        <a href="#">Log</a>
+                        <a href="#">Oui2</a>
                     </li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
@@ -102,26 +78,6 @@
             </div>
         </div>
     </nav>
-    <table id="tableID" class="table table-striped" style="width:70%; margin: 0 auto; 
-    ">
-        <div style="text-align: center;">
-            <thead>
-                <tr>
-                    <th class="center" scope="col">#</th>
-                    <th class="center" scope="col">Prénom</th>
-                    <th class="center" scope="col">Nom</th>
-                    <th class="center" scope="col">Log</th>
-                    <th class="center" scope="col">Crédit</th>
-                    <th class="center" scope="col">Gpa</th>
-                </tr>
-            </thead>
-            <tbody>
-                <script>
-                    getAllUsers();
-                </script>
-            </tbody>
-        </div>
-    </table>
 </body>
 
 </html>

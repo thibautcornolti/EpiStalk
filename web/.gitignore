@@ -1,6 +1,6 @@
 node_modules
 .vscode
-*.js
+routes/*.js
+src/*.js
+/*.js
 *.js.map
-!public/*.js
-!.gitignore

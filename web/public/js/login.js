@@ -27,7 +27,7 @@ function hideAlert() {
 function login() {
     let email = $("#lemail").val();
     let pass = $("#lpass").val();
-    $.post("/login", { email, pass }, function (data) {
+    $.post("/api/login", { email, pass }, function (data) {
         hideAlert();
         showAlert("You have been logged", "alert-success")
         document.cookie = "token=" + data.token;
@@ -45,7 +45,7 @@ function login() {
 function register() {
     let email = $("#remail").val();
     let pass = $("#rpass").val();
-    $.post("/register", { email, pass }, function (data) {
+    $.post("/api/register", { email, pass }, function (data) {
         hideAlert();
         showAlert(data.message, "alert-success");
     }).fail(function (data, textStatus, xhr) {

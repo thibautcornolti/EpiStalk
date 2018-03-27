@@ -5,6 +5,7 @@ import session = require('express-session');
 import bodyParser = require('body-parser');
 
 import { con, hostSQL, hostname, port, secretCookie } from './vars';
+import { withLogin } from './src/account';
 
 con.connect((err, con) => {
   if (err) throw err;
@@ -12,7 +13,6 @@ con.connect((err, con) => {
 });
 
 import account_route = require('./routes/account');
-import account_handling = require('./src/account');
 import tasks = require('./src/tasks');
 var app = express();
 
@@ -35,18 +35,12 @@ app.get('/', (req, res) => {
   res.redirect('home');
 });
 
-app.get('/home', (req, res) => {
-  let token = req.cookies.token
-  if (!token)
-    res.redirect('login');
-  else {
-    account_handling.getUser(token, con, (err, user) => {
-      if (err)
-        res.redirect('login');
-      else
-        res.render('home.html', { user, oui:["ah", "bh", "obutzr"] });
-    });
-  }
+app.get('/home', withLogin, (req, res) => {
+  res.render('home');
+});
+
+app.get('/settings', withLogin, (req, res) => {
+        res.render('settings.html');
 });
 
 app.listen(port, hostname, function () {

@@ -1,6 +1,6 @@
 import bcrypt = require('bcrypt')
 import jwt = require('jsonwebtoken')
-import { secretToken } from '../vars'
+import { secretToken, con } from '../vars'
 
 class User {
     email: string;
@@ -16,7 +16,7 @@ class User {
     }
 }
 
-function register(email: string, password: string, con, callback: (error?: Error) => any): void {
+function register(email: string, password: string, callback: (error?: Error) => any): void {
     bcrypt.hash(password, 5, (err, hashedPassword) => {
         if (err) return callback(err);
         let queryString = "SELECT email FROM user WHERE email = ?";
@@ -33,7 +33,7 @@ function register(email: string, password: string, con, callback: (error?: Error
     });
 };
 
-function login(email: string, password: string, expiresIn: string, con, callback: (error: Error, token?) => any): void {
+function login(email: string, password: string, expiresIn: string, callback: (error: Error, token?) => any): void {
     let queryString = "SELECT id, password FROM user WHERE email = ?";
     con.query(queryString, [email], (err, result_user) => {
         if (err) return callback(err);
@@ -51,7 +51,7 @@ function login(email: string, password: string, expiresIn: string, con, callback
     });
 };
 
-function getUser(token: string, con, callback: (error: Error, user?: User) => any) {
+function getUser(token: string, callback: (error: Error, user?: User) => any) {
     jwt.verify(token, secretToken, (err, data) => {
         if (err) return callback(err);
         let queryString = "SELECT email, gpa, credit, current_week_log, show_gpa, show_credit, show_log FROM user WHERE id = ?";
@@ -68,8 +68,8 @@ function getUser(token: string, con, callback: (error: Error, user?: User) => an
     });
 };
 
-function getAllUsers(token: string, con, callback: (error: Error, user?: Array<User>) => any) {
-    getUser(token, con, (err, user) => {
+function getAllUsers(token: string, callback: (error: Error, user?: Array<User>) => any) {
+    getUser(token, (err, user) => {
         if (err) return callback(err);
         jwt.verify(token, secretToken, (err, data) => {
             if (err) return callback(err);
@@ -90,4 +90,38 @@ function getAllUsers(token: string, con, callback: (error: Error, user?: Array<U
     });
 };
 
-export { register, login, getUser, getAllUsers }
+/* Middleware function to check token for render endpoints */
+function withLogin(req, res, next) {
+    let token = req.cookies.token
+    if (!token)
+        res.redirect('login');
+    else {
+        getUser(token, (err, user) => {
+            if (err)
+                res.redirect('login');
+            else {
+                req.user = user;
+                next();
+            }
+        });
+    }
+}
+
+/* Middleware function to check token for api endpoints */
+function withAPILogin(req, res, next) {
+    let token = req.cookies.token
+    if (!token)
+        res.status(403).send({ error: "Token not found" });
+    else {
+        getUser(token, (err, user) => {
+            if (err)
+                res.status(403).send({ error: "Invalid credentials" });
+            else {
+                req.user = user;
+                next();
+            }
+        });
+    }
+}
+
+export { withLogin, withAPILogin, register, login, getUser, getAllUsers }
