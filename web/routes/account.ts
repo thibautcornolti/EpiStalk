@@ -21,7 +21,16 @@ router.get('/api/user', withAPILogin, (req, res) => {
 });
 
 router.get('/api/users', withAPILogin, (req, res) => {
-    res.status(200).send({ users: req.users });
+    let token = req.cookies.token
+    if (!token)
+        res.status(403).send({ error: "Token not found" });
+    getAllUsers(token, (err, users) => {
+        if (err)
+            res.status(403).send({ error: "Invalid credentials" });
+        else {
+            res.status(200).send({ users: users });
+        }
+    });
 });
 
 router.get('/login', (req, res) => {
