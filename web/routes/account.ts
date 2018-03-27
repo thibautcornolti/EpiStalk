@@ -16,6 +16,21 @@ router.post('/login', (req, res) => {
         });
 });
 
+router.get('/users', (req, res) => {
+    let token = req.cookies.token
+    if (!token)
+        res.status(403).send({ error: "Token not found" });
+    else {
+        account_handling.getAllUsers(token, con, (err, users) => {
+            console.log(users);
+            if (err)
+                res.status(403).send({ error: "Invalid token" });
+            else
+                res.status(200).send({ users: users });
+        });
+    }
+});
+
 router.get('/login', (req, res) => {
     let token = req.cookies.token
     if (!token)

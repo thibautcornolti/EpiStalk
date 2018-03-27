@@ -8,7 +8,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <script src="/public/js/home.js"></script>
+    <script type="text/javascript" src='public/js/home.js'> </script>
     <style>
         /* Remove the navbar's default margin-bottom and rounded borders */
 
@@ -35,8 +35,7 @@
     </style>
 </head>
 
-<body>
-
+<body class="noselect">
     <nav class="navbar navbar-default">
         <div class="container-fluid">
             <div class="navbar-header">
@@ -60,11 +59,16 @@
                     </li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
-                    <li>
-                        <a id="more-button">
+                    <li class="dropdown">
+                        <a id="more-button" class="dropdown-toggle" data-toggle="dropdown">
                             <%= user.email.toUpperCase().split('@')[0] %> &nbsp;
                                 <span class="glyphicon glyphicon-chevron-down"></span>
                         </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a href="#">Settings</a>
+                            </li>
+                        </ul>
                     </li>
                     <li>
                         <a id="logout-button" data-toggle="modal" data-target="#myModal">
@@ -98,8 +102,8 @@
             </div>
         </div>
     </nav>
-    <table class="table table-striped" style="width:70%; margin: 0 auto; 
-  ">
+    <table id="tableID" class="table table-striped" style="width:70%; margin: 0 auto; 
+    ">
         <div style="text-align: center;">
             <thead>
                 <tr>
@@ -112,34 +116,12 @@
                 </tr>
             </thead>
             <tbody>
-                <tr class="center">
-                    <th class="center" scope="row">1</th>
-                    <td>Luc</td>
-                    <td>Brulet</td>
-                    <td>45H</td>
-                    <td>95</td>
-                    <td>2.54</td>
-                </tr>
-                <tr class="center">
-                    <th class="center" scope="row">2</th>
-                    <td>Thibaut</td>
-                    <td>Cornolti</td>
-                    <td>0H</td>
-                    <td>120</td>
-                    <td>4.00</td>
-                </tr>
-                <tr class="center">
-                    <th class="center" scope="row">3</th>
-                    <td>Romain</td>
-                    <td>Lancia</td>
-                    <td>20H</td>
-                    <td>100</td>
-                    <td>8.23</td>
-                </tr>
+                <script>
+                    getAllUsers();
+                </script>
             </tbody>
         </div>
     </table>
-
 </body>
 
 </html>
