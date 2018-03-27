@@ -16,6 +16,7 @@
             margin-bottom: 0;
             border-radius: 0;
         }
+
         /* On small screens, set height to 'auto' for sidenav and grid */
 
         @media screen and (max-width: 767px) {
@@ -26,6 +27,10 @@
             .row.content {
                 height: auto;
             }
+        }
+
+        .center {
+            text-align: center;
         }
     </style>
 </head>
@@ -57,7 +62,8 @@
                 <ul class="nav navbar-nav navbar-right">
                     <li>
                         <a id="more-button">
-                            ACCOUNT <span class="glyphicon glyphicon-chevron-down"></span>
+                            <%= user.email.toUpperCase().split('@')[0] %> &nbsp;
+                                <span class="glyphicon glyphicon-chevron-down"></span>
                         </a>
                     </li>
                     <li>
@@ -92,7 +98,47 @@
             </div>
         </div>
     </nav>
-
+    <table class="table table-striped" style="width:70%; margin: 0 auto; 
+  ">
+        <div style="text-align: center;">
+            <thead>
+                <tr>
+                    <th class="center" scope="col">#</th>
+                    <th class="center" scope="col">Prénom</th>
+                    <th class="center" scope="col">Nom</th>
+                    <th class="center" scope="col">Log</th>
+                    <th class="center" scope="col">Crédit</th>
+                    <th class="center" scope="col">Gpa</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="center">
+                    <th class="center" scope="row">1</th>
+                    <td>Luc</td>
+                    <td>Brulet</td>
+                    <td>45H</td>
+                    <td>95</td>
+                    <td>2.54</td>
+                </tr>
+                <tr class="center">
+                    <th class="center" scope="row">2</th>
+                    <td>Thibaut</td>
+                    <td>Cornolti</td>
+                    <td>0H</td>
+                    <td>120</td>
+                    <td>4.00</td>
+                </tr>
+                <tr class="center">
+                    <th class="center" scope="row">3</th>
+                    <td>Romain</td>
+                    <td>Lancia</td>
+                    <td>20H</td>
+                    <td>100</td>
+                    <td>8.23</td>
+                </tr>
+            </tbody>
+        </div>
+    </table>
 
 </body>
 
