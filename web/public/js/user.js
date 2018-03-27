@@ -1,5 +1,6 @@
 
 let user;
+let puser;
 
 $.urlParam = function (name) {
     let results = new RegExp('[\?&]' + name + '=([^&#]*)')
@@ -8,23 +9,26 @@ $.urlParam = function (name) {
 }
 
 $(document).ready(function () {
-    $.get("/api/user?login=" + $.urlParam("login"), function (data) {
+    $.get("/api/user", function (data) {
         user = data.user;
-        main();
-    });
+        $.get("/api/user?login=" + $.urlParam("login"), function (data) {
+            puser = data.user;
+            main();
+        });
+    })
 });
 
 function main() {
     setUserFields();
     setLoginFields();
-    setUserPictures();
+    setPuserPictures();
 }
 
 /* Replace all pictures with the "user-picture" attribute with the user's picture. */
-function setUserPictures() {
+function setPuserPictures() {
     let url = "https://cdn.local.epitech.eu/userprofil/profilview/";
     if (user) {
-        let name = user.email.split("@")[0];
+        let name = puser.email.split("@")[0];
         $(".user-picture").attr("src", url+name+".png");
     }
 }
