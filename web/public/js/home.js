@@ -13,6 +13,11 @@ $.get("/api/user", function (data) {
 function main() {
     setUserFields();
     buildLeaderboard();
+
+    $("#leaderboard tr").on("click", function () {
+        if ($(this).hasClass("user-leaderboard"))
+            $(location).attr("href", "/user?login="+$(this).attr("login"))
+    });
 }
 
 /* Replace all fields with the "get-upper-user" attribute with the user name. */
@@ -50,7 +55,7 @@ function buildLeaderboard() {
         let log = buildCell("current_week_log", "log time", false);
         let lastName = users[i].email.toUpperCase().split('@')[0].split('.')[1];
         let firstName = users[i].email.split('.')[0].toUpperCase();
-        let tab = '<tr href="/settings" class="center">' +
+        let tab = '<tr login="'+users[i].email+'" class="center user-leaderboard">' +
             '<th class="center" scope="row">' + (i + 1) + '</th>' +
             '<td>' + firstName + '</td>' +
             '<td>' + lastName + '</td>' +
@@ -105,6 +110,7 @@ function sortLeaderboard(n) {
         }
     }
 }
+
 
 $(document).ready(function () {
     $("#search-leaderboard").on("keyup", function () {

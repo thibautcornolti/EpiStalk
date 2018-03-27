@@ -3,12 +3,12 @@
 
 <head>
     <title>TA GROSSE MERE</title>
-    <link rel="stylesheet" type="text/css" href="/public/css/home.css" />
+    <link rel="stylesheet" type="text/css" href="/public/css/trombi.css" />
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src='public/js/home.js'> </script>
+    <script type="text/javascript" src='public/js/trombi.js'> </script>
 </head>
 
 <body class="noselect">
@@ -24,8 +24,8 @@
             </div>
             <div class="collapse navbar-collapse" id="myNavbar">
                 <ul class="nav navbar-nav">
-                    <li class="active">
-                        <a href="#">Home</a>
+                    <li>
+                        <a href="/home">Home</a>
                     </li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
@@ -75,28 +75,7 @@
         </div>
     </nav>
     <div style="width:80%; margin: 0 auto;">
-        <input type="text" class="form-control" id="search-leaderboard" placeholder="Search..." title="Type in a name">
-        <br>
-        <table id="leaderboard" class="table table-striped text-center">
-            <thead>
-                <tr class="header-leaderboard">
-                    <th class="text-left" scope="col">#</th>
-                    <th class="text-center" scope="col" onclick="sortLeaderboard(0)">First name</th>
-                    <th class="text-center" scope="col" onclick="sortLeaderboard(1)">Last name</th>
-                    <th class="text-center" scope="col" onclick="sortLeaderboard(2)">City</th>
-                    <th class="text-center" scope="col" onclick="sortLeaderboard(3)">Promo</th>
-                    <th class="text-center" scope="col" onclick="sortLeaderboard(4)">Log</th>
-                    <th class="text-center" scope="col" onclick="sortLeaderboard(5)">Credits</th>
-                    <th class="text-center" scope="col" onclick="sortLeaderboard(6)">GPA</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- HERE GOES THE RESPONSIVE TAB FROM HOME.JS -->
-            </tbody>
-        </table>
-        <div class="text-center">
-            <h1 class="spinner-leaderboard glyphicon glyphicon-refresh glyphicon-refresh-animate"></h1>
-        </div>
+        
     </div>
 </body>
 
