@@ -21,6 +21,10 @@ router.get('/api/user', withAPILogin, (req, res) => {
         res.status(200).send({ user: req.user });
     else
         getUserWithEmail(req.query.login, (err, user) => {
+            if (err) {
+                res.status(403).send({ error: "Login not found" });
+                return;
+            }
             user.gpa = (req.user.gpa) ? user.gpa : undefined;
             user.credit = (req.user.credit) ? user.credit : undefined;
             user.current_week_log = (req.user.current_week_log) ? user.current_week_log : undefined;
