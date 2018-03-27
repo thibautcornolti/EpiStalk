@@ -17,7 +17,17 @@ router.post('/login', (req, res) => {
 });
 
 router.get('/login', (req, res) => {
-    res.render("login.html")
+    let token = req.cookies.token
+    if (!token)
+        res.render('login');
+    else {
+        account_handling.getUser(token, con, (err, user) => {
+            if (err)
+                res.render('login');
+            else
+                res.redirect('home');
+        });
+    }
 });
 
 router.get('/logout', (req, res) => {

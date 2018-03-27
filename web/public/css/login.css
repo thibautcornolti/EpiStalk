@@ -100,7 +100,7 @@
   color: #EF3B3A;
 }
 body {
-  background: rgb(36, 126, 201); /* fallback for old browsers */
+  background: rgb(36, 126, 201);
   background: -webkit-linear-gradient(right, rgb(36, 126, 201), rgb(36, 126, 201));
   background: -moz-linear-gradient(right, rgb(36, 126, 201), rgb(36, 126, 201));
   background: -o-linear-gradient(right, rgb(36, 126, 201), rgb(36, 126, 201));
