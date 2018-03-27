@@ -1,74 +1,87 @@
 import bcrypt = require('bcrypt')
+import jwt = require('jsonwebtoken')
+import { secretToken } from '../vars'
 
 class User {
-    token: string;
+    db: any;
     email: string;
-    constructor(token?: string, email?: string) {
-        this.token = token;
+    gpa: number;
+    credit: number;
+    current_week_log: number;
+
+    constructor(db, email: string, gpa: number, credit: number, current_week_log: number) {
+        this.db = db;
         this.email = email;
+        this.gpa = gpa;
+        this.credit = credit;
+        this.current_week_log = current_week_log;
+    }
+
+    update(callback: (error?: Error) => any): void {
+        let queryString = "SELECT gpa, credit, current_week_log, show_gpa, show_credit, show_log FROM user WHERE email = ?";
+        this.db.query(queryString, [this.email], (err, res) => {
+            if (err) return callback(err);
+            console.log(err);
+            console.log(res);
+            if (res.length > 0)
+                return callback(Error("user not found"));
+            this.gpa = (res[0].show_gpa) ? res[0].gpa : undefined;
+            this.credit = (res[0].show_credit) ? res[0].credit : undefined;
+            this.current_week_log = (res[0].show_log) ? res[0].current_week_log : undefined;
+        });
     }
 }
 
-function register(email: string, password: string, con, callback: (error?: Error) => void): void {
+function register(email: string, password: string, con, callback: (error?: Error) => any): void {
     bcrypt.hash(password, 5, (err, hashedPassword) => {
-        if (err) throw err;
-        let queryString: string = "SELECT email FROM user WHERE email = ?";
+        if (err) return callback(err);
+        let queryString = "SELECT email FROM user WHERE email = ?";
         con.query(queryString, [email], (err, result) => {
-            if (err) throw err;
+            if (err) return callback(err);
             if (result.length > 0)
                 return callback(Error("already registered"));
-            var queryString = "INSERT INTO user (email, password) VALUES (?, ?)";
+            let queryString = "INSERT INTO user (email, password) VALUES (?, ?)";
             con.query(queryString, [email, hashedPassword], (err, result) => {
-                if (err) throw err;
+                if (err) return callback(err);
                 return callback();
             });
         })
     });
 };
 
-function login(email: string, password: string, sessionid: string, con, callback: (user: User | Error) => void): void {
-    var queryString = "SELECT id, password FROM user WHERE email = ?";
-    con.query(queryString, [email], (err, result) => {
-        if (err) throw err;
-        if (result.length == 0)
+function login(email: string, password: string, expiresIn: string, con, callback: (error: Error, token?) => any): void {
+    let queryString = "SELECT id, password FROM user WHERE email = ?";
+    con.query(queryString, [email], (err, result_user) => {
+        if (err) return callback(err);
+        if (result_user.length == 0)
             return callback(Error("user not found"));
-        bcrypt.compare(password, result[0].password, (err, res) => {
-            if (err) throw err;
+        bcrypt.compare(password, result_user[0].password, (err, res) => {
+            if (err) return callback(err);
             if (!res)
                 return callback(Error("bad password"));
-            var queryString = "INSERT INTO token (id_user, token) VALUES (?, ?)";
-            con.query(queryString, [result[0].id, sessionid], (err, result) => {
-                if (err) throw err;
-                return callback(
-                    new User(sessionid, email)
-                );
+            jwt.sign({ id: result_user[0].id }, secretToken, { expiresIn: expiresIn }, (err, token) => {
+                if (err) return callback(err);
+                return callback(undefined, token);
             });
         });
     });
 };
 
-function logout(sessionid: string, con, callback: (error?: Error) => void): void {
-    var queryString = "DELETE FROM token WHERE token = ?";
-    con.query(queryString, [sessionid], (err, result) => {
-        if (err) throw err;
-        return callback();
-    });
-};
-
-function isLogged(sessionid: string, con, callback: (user: User | Error) => void): void {
-    var queryString = "SELECT id_user, valid_date FROM token WHERE token = ?";
-    con.query(queryString, [sessionid], (err, result) => {
-        if (err) throw err;
-        if (result.length == 0)
-            return callback(Error("token not found"));
-        var queryString = "SELECT email FROM user WHERE id = ?";
-        con.query(queryString, [result[0].id_user], (err, result) => {
-            if (err) throw err;
-            if (result.length == 0)
-                return callback(undefined);
-            return callback(new User(sessionid, result[0]["email"]));
+function getUser(token: string, con, callback: (error: Error, user?: User) => any) {
+    jwt.verify(token, secretToken, (err, data) => {
+        if (err) return callback(err);
+        let queryString = "SELECT email, gpa, credit, current_week_log, show_gpa, show_credit, show_log FROM user WHERE id = ?";
+        con.query(queryString, [data.id], (err, result_user) => {
+            if (err) return callback(err);
+            if (result_user.length == 0)
+                return callback(Error("user not found"));
+            let email = result_user[0].email;
+            let gpa = (result_user[0].show_gpa) ? result_user[0].gpa : undefined;
+            let credit = (result_user[0].show_credit) ? result_user[0].credit : undefined;
+            let current_week_log = (result_user[0].show_log) ? result_user[0].current_week_log : undefined;
+            return callback(undefined, new User(con, email, gpa, credit, current_week_log));
         });
     });
 };
 
-export { register, login, logout, isLogged }
+export { register, login, getUser }

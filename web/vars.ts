@@ -1,8 +1,10 @@
 import mysql = require('mysql');
 
-let hostname : string = 'localhost';
-let hostSQL : string = "104.155.43.170";
-let port : number = 3000;
+let secretToken: string = "ouibite"
+let secretCookie: string = "biteoui"
+let hostname: string = 'localhost';
+let hostSQL: string = "104.155.43.170";
+let port: number = 3000;
 
 let con = mysql.createConnection({
     host: hostSQL,
@@ -11,4 +13,4 @@ let con = mysql.createConnection({
     database: "epislack-test"
 });
 
-export { hostname, hostSQL, port, con };
+export { hostname, hostSQL, port, con, secretToken, secretCookie };

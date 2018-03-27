@@ -8,8 +8,9 @@ $('#close').on('click', hideAlert);
 
 $("#close").fadeOut();
 
-function showAlert(msg) {
+function showAlert(msg, level) {
     $("#alert-msg").text(msg);
+    $(".alert").addClass(level)
     $(".alert").removeClass('out');
     $(".alert").addClass('in');
     $("#close").fadeIn();
@@ -17,6 +18,8 @@ function showAlert(msg) {
 
 function hideAlert() {
     $(".alert").removeClass('in');
+    $(".alert").removeClass('alert-success');
+    $(".alert").removeClass('alert-warning');
     $(".alert").addClass('out');
     $("#close").fadeOut();
 }
@@ -24,13 +27,18 @@ function hideAlert() {
 function login() {
     let email = $("#lemail").val();
     let pass = $("#lpass").val();
-    console.log(email)
     $.post("/login", { email, pass }, function (data) {
         hideAlert();
+        showAlert("You have been logged", "alert-success")
+        document.cookie = "token=" + data.token;
         $(location).attr('href', '/home');
     }).fail(function (data, textStatus, xhr) {
+        hideAlert();
         let res = JSON.parse(data.responseText);
-        showAlert(res.error);
+        if (res.error)
+            showAlert(res.error, "alert-danger");
+        else if (res.warning)
+            showAlert(res.warning, "alert-warning")
     });
 }
 
@@ -39,9 +47,13 @@ function register() {
     let pass = $("#rpass").val();
     $.post("/register", { email, pass }, function (data) {
         hideAlert();
-        $(location).attr('href', '/home');
+        showAlert(data.message, "alert-success");
     }).fail(function (data, textStatus, xhr) {
+        hideAlert();
         let res = JSON.parse(data.responseText);
-        showAlert(res.error);
+        if (res.error)
+            showAlert(res.error, "alert-danger");
+        else if (res.warning)
+            showAlert(res.warning, "alert-warning")
     });
 }

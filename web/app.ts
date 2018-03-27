@@ -1,9 +1,10 @@
 import express = require('express');
+import cookieParser = require('cookie-parser')
 import path = require("path");
 import session = require('express-session');
 import bodyParser = require('body-parser');
 
-import { con, hostSQL, hostname, port } from './vars';
+import { con, hostSQL, hostname, port, secretCookie } from './vars';
 
 con.connect((err, con) => {
   if (err) throw err;
@@ -30,27 +31,28 @@ app.use(session({
 }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookieParser(secretCookie))
 
 
 app.use('/public', express.static(path.join(__dirname, '/public')));
 app.use('/', account_route);
 
 app.get('/', (req, res) => {
-  account_handling.isLogged(req.session.id, con, (user) => {
-    if (user)
-      res.redirect('home');
-    else
-      res.redirect('login');
-  });
+  res.redirect('home');
 });
 
 app.get('/home', (req, res) => {
-  account_handling.isLogged(req.session.id, con, (user) => {
-    if (user)
-      res.render('home.html', user);
-    else
-      res.redirect('login');
-  });
+  let token = req.cookies.token
+  if (!token)
+    res.redirect('login');
+  else {
+    account_handling.getUser(token, con, (err, user) => {
+      if (err)
+        res.redirect('login');
+      else
+        res.render('home.html', { user });
+    });
+  }
 });
 
 app.listen(port, hostname, function () {
