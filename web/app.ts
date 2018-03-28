@@ -8,8 +8,8 @@ import { con, hostSQL, hostname, port, secretCookie } from './vars';
 import { withLogin } from './src/account';
 
 con.connect((err, con) => {
-  if (err) throw err;
-  console.log("Connected to " + hostSQL + "!");
+    if (err) throw err;
+    console.log("Connected to " + hostSQL + "!");
 });
 
 import account_route = require('./routes/account');
@@ -31,20 +31,23 @@ app.use(cookieParser(secretCookie))
 app.use('/public', express.static(path.join(__dirname, '/public')));
 app.use('/', account_route);
 
+import { fillDb } from './src/intra';
+
 app.get('/', (req, res) => {
-  res.redirect('home');
+    res.redirect('home');
 });
 
 app.get('/home', withLogin, (req, res) => {
-  res.render('home');
+    fillDb();
+    res.render('home');
 });
 
 app.get('/settings', withLogin, (req, res) => {
-        res.render('settings.html');
+    res.render('settings.html');
 });
 
 app.listen(port, hostname, function () {
-  console.log("Mon serveur fonctionne sur http://" + hostname + ":" + port + "");
+    console.log("Mon serveur fonctionne sur http://" + hostname + ":" + port + "");
 });
 
 export = app;

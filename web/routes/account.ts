@@ -1,7 +1,8 @@
 import express = require('express');
 var router = express.Router();
-import { withLogin, withAPILogin, login, register, getUser, getAllUsers } from '../src/account';
+import { withLogin, withAPILogin, login, register, getUser, getAllUsers, newPassword} from '../src/account';
 import { con } from '../vars';
+import { error } from 'util';
 
 router.post('/api/login', (req, res) => {
     if (req.body.email == undefined || req.body.email.length == 0 ||
@@ -63,6 +64,19 @@ router.post('/api/register', (req, res) => {
             else
                 res.status(200).send({ message: "You have been registered. Please login." });;
         });
+});
+
+router.post('/api/password', withAPILogin, (req, res) => {
+    if (req.body.password == undefined || req.body.password.length == 0 ||
+        req.body.passwordConfirm == undefined || req.body.passwordConfirm.length == 0)
+        res.status(403).send({ warning: "Empty field" });
+    else
+        newPassword(req.user.email, req.body.passwordConfirm, (error?) => {
+            if (error)
+                res.status(403).send({ error: "Request failed. Please re-try." });
+            else
+                res.status(200).send({ message: "You changed your password with success." });;
+    });
 });
 
 router.get('/register', (req, res) => {
