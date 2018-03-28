@@ -4,3 +4,5 @@ routes/*.js
 src/*.js
 /*.js
 *.js.map
+log/
+

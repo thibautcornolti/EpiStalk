@@ -21,6 +21,8 @@
     "jsonwebtoken": "^8.2.0",
     "lodash": "^4.17.5",
     "mysql": "^2.15.0",
-    "path": "^0.12.7"
+    "path": "^0.12.7",
+    "winston": "^2.4.1",
+    "winston-daily-rotate-file": "^3.0.1"
   }
 }

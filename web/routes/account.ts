@@ -1,6 +1,7 @@
 import express = require('express');
 var router = express.Router();
-import { withLogin, withAPILogin, login, register, getUser, getAllUsers, getUserWithEmail, newPassword } from '../src/account';
+import { withLog, withLogin, withAPILogin } from '../src/middleware';
+import { login, register, getUser, getAllUsers, getUserWithEmail, newPassword } from '../src/account';
 import { con } from '../vars';
 import { error } from 'util';
 
