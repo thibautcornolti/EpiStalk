@@ -38,8 +38,11 @@ app.get('/', (req, res) => {
 });
 
 app.get('/home', withLogin, (req, res) => {
-    fillDb();
     res.render('home');
+});
+
+app.get('/user', withLogin, (req, res) => {
+    res.render('user');
 });
 
 app.get('/settings', withLogin, (req, res) => {
