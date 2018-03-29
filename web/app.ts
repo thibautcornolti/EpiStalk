@@ -12,14 +12,14 @@ function handleDisconnect() {
 
     con.connect((err, con) => {
         if (err) {
-            logger.error(err.message);
+            logger.error("(sql) "+err.message);
             setTimeout(handleDisconnect, 2000);
         }
         else logger.info("(sql) Successfully connected to " + hostSQL + "!");
     });
 
     con.on('error', function (err) {
-        logger.error(err.message);
+        logger.error("(sql) "+err.message);
         if (err.code === 'PROTOCOL_CONNECTION_LOST')
             handleDisconnect();
         else
