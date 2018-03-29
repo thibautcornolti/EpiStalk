@@ -1,6 +1,7 @@
-import bcrypt = require('bcrypt')
-import jwt = require('jsonwebtoken')
-import { secretToken, con } from '../vars'
+import bcrypt = require('bcrypt');
+import jwt = require('jsonwebtoken');
+import zlib = require('zlib');
+import { secretToken, con } from '../vars';
 import { fillDb } from './intra';
 
 class User {
@@ -10,14 +11,57 @@ class User {
     gpa: number;
     credit: number;
     current_week_log: number;
+    show_rank: boolean;
+    rank: any;
+    show_mark: boolean;
+    mark: any;
 
-    constructor(email: string, city: string, promo: string, gpa: number, credit: number, current_week_log: number) {
+    constructor(
+        email: string, city: string,
+        promo: string, gpa: number,
+        credit: number, current_week_log: number,
+        show_rank: boolean, show_mark: boolean
+    ) {
         this.email = email;
         this.city = city;
         this.promo = promo;
         this.gpa = gpa;
         this.credit = credit;
         this.current_week_log = current_week_log;
+        this.show_rank = show_rank;
+        this.show_mark = show_mark;
+    }
+
+    fillRank(callback: (error?: Error) => any): void {
+        let queryString = "SELECT rank, show_rank FROM user WHERE email = ?";
+        con.query(queryString, [this.email], (err, result_user) => {
+            if (err) return callback(err);
+            if (result_user.length == 0)
+                return callback(Error("user not found"));
+            if (!result_user[0].show_rank)
+                return callback();
+            zlib.inflate(result_user[0].rank, (err, res) => {
+                if (err) return callback(err);
+                this.rank = res.toString();
+                return callback();
+            });
+        });
+    }
+
+    fillMark(callback: (error?: Error) => any): void {
+        let queryString = "SELECT mark, show_mark FROM user WHERE email = ?";
+        con.query(queryString, [this.email], (err, result_user) => {
+            if (err) return callback(err);
+            if (result_user.length == 0)
+                return callback(Error("user not found"));
+            if (!result_user[0].show_mark)
+                return callback();
+            zlib.inflate(result_user[0].mark, (err, res) => {
+                if (err) return callback(err);
+                this.mark = res.toString();
+                return callback();
+            });
+        });
     }
 }
 
@@ -73,7 +117,7 @@ function login(email: string, password: string, expiresIn: string, callback: (er
 function getUser(token: string, callback: (error: Error, user?: User) => any) {
     jwt.verify(token, secretToken, (err, data) => {
         if (err) return callback(err);
-        let queryString = "SELECT email, city, promo, gpa, credit, current_week_log, show_gpa, show_credit, show_log FROM user WHERE id = ?";
+        let queryString = "SELECT email, city, promo, gpa, credit, current_week_log, show_gpa, show_credit, show_log, show_rank, show_mark FROM user WHERE id = ?";
         con.query(queryString, [data.id], (err, result_user) => {
             if (err) return callback(err);
             if (result_user.length == 0)
@@ -84,13 +128,15 @@ function getUser(token: string, callback: (error: Error, user?: User) => any) {
             let gpa = (result_user[0].show_gpa) ? result_user[0].gpa : undefined;
             let credit = (result_user[0].show_credit) ? result_user[0].credit : undefined;
             let current_week_log = (result_user[0].show_log) ? result_user[0].current_week_log : undefined;
-            return callback(undefined, new User(email, city, promo, gpa, credit, current_week_log));
+            let show_rank = result_user[0].show_rank;
+            let show_mark = result_user[0].show_mark;
+            return callback(undefined, new User(email, city, promo, gpa, credit, current_week_log, show_rank, show_mark));
         });
     });
 };
 
 function getUserWithEmail(email: string, callback: (error: Error, user?: User) => any) {
-    let queryString = "SELECT city, promo, gpa, credit, current_week_log, show_gpa, show_credit, show_log FROM user WHERE email = ?";
+    let queryString = "SELECT city, promo, gpa, credit, current_week_log, show_gpa, show_credit, show_log, show_rank, show_mark FROM user WHERE email = ?";
     con.query(queryString, [email], (err, result_user) => {
         if (err) return callback(err);
         if (result_user.length == 0)
@@ -100,7 +146,9 @@ function getUserWithEmail(email: string, callback: (error: Error, user?: User) =
         let gpa = (result_user[0].show_gpa) ? result_user[0].gpa : undefined;
         let credit = (result_user[0].show_credit) ? result_user[0].credit : undefined;
         let current_week_log = (result_user[0].show_log) ? result_user[0].current_week_log : undefined;
-        return callback(undefined, new User(email, city, promo, gpa, credit, current_week_log));
+        let show_rank = result_user[0].show_rank;
+        let show_mark = result_user[0].show_mark;
+        return callback(undefined, new User(email, city, promo, gpa, credit, current_week_log, show_rank, show_mark));
     });
 };
 
@@ -109,7 +157,7 @@ function getAllUsers(token: string, callback: (error: Error, user?: Array<User>)
         if (err) return callback(err);
         jwt.verify(token, secretToken, (err, data) => {
             if (err) return callback(err);
-            let queryString = "SELECT email, city, promo, gpa, credit, current_week_log, show_gpa, show_credit, show_log FROM user";
+            let queryString = "SELECT email, city, promo, gpa, credit, current_week_log, show_gpa, show_credit, show_log, show_rank, show_mark FROM user";
             con.query(queryString, [data.id], (err, result_user) => {
                 if (err) return callback(err);
                 let users: Array<User> = [];
@@ -120,7 +168,9 @@ function getAllUsers(token: string, callback: (error: Error, user?: Array<User>)
                     let gpa = (result_user[i].show_gpa && user.gpa) ? result_user[i].gpa : undefined;
                     let credit = (result_user[i].show_credit && user.credit) ? result_user[i].credit : undefined;
                     let current_week_log = (result_user[i].show_log && user.current_week_log) ? result_user[i].current_week_log : undefined;
-                    users.push(new User(email, city, promo, gpa, credit, current_week_log))
+                    let show_rank = result_user[0].show_rank;
+                    let show_mark = result_user[0].show_mark;
+                    users.push(new User(email, city, promo, gpa, credit, current_week_log, show_rank, show_mark))
                 }
                 return callback(undefined, users);
             });
@@ -128,38 +178,4 @@ function getAllUsers(token: string, callback: (error: Error, user?: Array<User>)
     });
 };
 
-/* Middleware function to check token for render endpoints */
-function withLogin(req, res, next) {
-    let token = req.cookies.token
-    if (!token)
-        res.redirect('login');
-    else {
-        getUser(token, (err, user) => {
-            if (err)
-                res.redirect('login');
-            else {
-                req.user = user;
-                next();
-            }
-        });
-    }
-}
-
-/* Middleware function to check token for api endpoints */
-function withAPILogin(req, res, next) {
-    let token = req.cookies.token
-    if (!token)
-        res.status(403).send({ error: "Token not found" });
-    else {
-        getUser(token, (err, user) => {
-            if (err)
-                res.status(403).send({ error: "Invalid credentials" });
-            else {
-                req.user = user;
-                next();
-            }
-        });
-    }
-}
-
-export { withLogin, withAPILogin, register, login, getUser, getUserWithEmail, getAllUsers, newPassword }
+export { register, login, getUser, getUserWithEmail, getAllUsers, newPassword }

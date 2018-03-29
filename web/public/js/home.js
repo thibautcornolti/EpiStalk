@@ -32,7 +32,7 @@ function setUserFields() {
 /* Build the responsive table from /api/users where we get all the users. */
 function buildLeaderboard() {
     $(".spinner-leaderboard").remove();
-    function buildCell(key, endMsg, plurial) {
+    function buildCell(i, key, endMsg, plurial) {
         be = (plurial) ? "are" : "is";
         your = (plurial) ? "yours" : "your";
         if (!user[key])
@@ -47,12 +47,12 @@ function buildLeaderboard() {
             return true;
         else if (!b.gpa)
             return false;
-        return a.gpa > a.gpa;
+        return a.gpa < b.gpa;
     });
-    for (var i = 0; i < users.length; i++) {
-        let credit = buildCell("credit", "credits", true);
-        let gpa = buildCell("gpa", "GPA", false);
-        let log = buildCell("current_week_log", "log time", false);
+    for (let i = 0; i < users.length; i++) {
+        let credit = buildCell(i, "credit", "credits", true);
+        let gpa = buildCell(i, "gpa", "GPA", false);
+        let log = buildCell(i, "current_week_log", "log time", false);
         let lastName = users[i].email.toUpperCase().split('@')[0].split('.')[1];
         let firstName = users[i].email.split('.')[0].toUpperCase();
         let tab = '<tr login="'+users[i].email+'" class="center user-leaderboard">' +
