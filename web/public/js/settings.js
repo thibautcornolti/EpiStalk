@@ -10,6 +10,26 @@ $.get("/api/user", function (data) {
     })
 })
 
+$('#close').on('click', hideAlert);
+
+$("#close").fadeOut();
+
+function showAlert(msg, level) {
+    $("#alert-msg").text(msg);
+    $(".alert").addClass(level)
+    $(".alert").removeClass('out');
+    $(".alert").addClass('in');
+    $("#close").fadeIn();
+}
+
+function hideAlert() {
+    $(".alert").removeClass('in');
+    $(".alert").removeClass('alert-success');
+    $(".alert").removeClass('alert-warning');
+    $(".alert").addClass('out');
+    $("#close").fadeOut();
+}
+
 function main() {
     setUserFields();
 
@@ -27,14 +47,20 @@ function setUserFields() {
 
 function changePassword() {
     let password = $("#password").val();
-    let passwordConfirm = $("#passwordConfirm").val();    
-    $.post("/api/password", { password, passwordConfirm }, function (data) {
-        console.log("success");
-    }).fail(function (data, textStatus, xhr) {
-        let res = JSON.parse(data.responseText);
-        if (res.error)
-            console.log(res.error);
-        else if (res.warning)
-            console.log(res.warning);
-    });
+    let passwordConfirm = $("#passwordConfirm").val();
+    if (password == undefined || password == "" ||
+        passwordConfirm == undefined || passwordConfirm == "")
+        showAlert("Field empty", "alert-warning");
+    else if (password != passwordConfirm) {
+        showAlert("Password are not the same", "alert-danger");
+    }
+    else
+        $.post("/api/password", { passwordConfirm }, function (data) {
+            hideAlert();
+            showAlert("Your password has been changed!", "alert-success")
+        }).fail(function (data, textStatus, xhr) {
+            let res = JSON.parse(data.responseText);
+            if (res.error)
+                showAlert(res.error, "alert-danger")
+        });
 }

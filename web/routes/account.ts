@@ -79,10 +79,6 @@ router.post('/api/register', (req, res) => {
 });
 
 router.post('/api/password', withAPILogin, (req, res) => {
-    if (req.body.password == undefined || req.body.password.length == 0 ||
-        req.body.passwordConfirm == undefined || req.body.passwordConfirm.length == 0)
-        res.status(403).send({ warning: "Empty field" });
-    else
         newPassword(req.user.email, req.body.passwordConfirm, (error?) => {
             if (error)
                 res.status(403).send({ error: "Request failed. Please re-try." });
