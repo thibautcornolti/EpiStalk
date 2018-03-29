@@ -43,7 +43,7 @@
                         </ul>
                     </li>
                     <li>
-                        <a id="logout-button" data-toggle="modal" data-target="#myModal">
+                        <a id="logout-button" data-toggle="modal" data-target="#modal-logout">
                             <span class="glyphicon glyphicon-log-out"></span>
                         </a>
                     </li>
@@ -51,8 +51,8 @@
             </div>
         </div>
 
-        <!-- Modal -->
-        <div id="myModal" class="modal fade" role="dialog">
+        <!-- Modal logout -->
+        <div id="modal-logout" class="modal fade" role="dialog">
             <div class="modal-dialog">
 
                 <!-- Modal content-->
@@ -74,8 +74,128 @@
             </div>
         </div>
     </nav>
-    <div style="width:80%; margin: 0 auto;">
-        <img class="img-circle user-picture" alt="User picture">
+    <!-- Modal rank show all -->
+    <div id="modal-rank-show-all" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-body">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title text-center">Are you sure ?</h4>
+                </div>
+                <div class="modal-body">
+                    <p class="text-center">Show all ranks might slow your browser</p>
+                </div>
+                <div class="modal-body text-center row">
+                    <div class="col-xs-6">
+                        <a id="rank-show-all" class="btn btn-danger" data-dismiss="modal" role="button">Show all</a>
+                    </div>
+                    <div class="col-xs-6">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal mark show all -->
+    <div id="modal-mark-show-all" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-body">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title text-center">Are you sure ?</h4>
+                </div>
+                <div class="modal-body">
+                    <p class="text-center">Show all marks might slow your browser</p>
+                </div>
+                <div class="modal-body text-center row">
+                    <div class="col-xs-6">
+                        <a id="mark-show-all" class="btn btn-danger" data-dismiss="modal" role="button">Show all</a>
+                    </div>
+                    <div class="col-xs-6">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div style="width:50%; margin: 2% auto;">
+            <div class="text-center puser-loading-hide" style="margin-top: 40%;">
+                <h2 class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></h2>
+            </div>
+            <div class="puser-loading-show" style="display: none">
+                <div class="row">
+                    <div class="text-left col-sm-4">
+                        <img class="puser-picture" alt="User picture" style="display:none">
+                    </div>
+                    <div class="text-right col-sm-8">
+                        <h1 style="margin-bottom: 0%;" class="get-upper-puser"></h1>
+                        <h1 style="margin-top: 0;">
+                            <small>Promo
+                                <span class="get-puser-promo"></span>&nbsp;
+                                <span class="get-puser-city"></span>
+                            </small>
+                        </h1>
+                        <br>
+                    </div>
+                </div>
+                <div class="row rank-view" style="margin-top: 7%; display: none;">
+                    <div style="margin-bottom: 3%">
+                        <h2 class="inline">Ranks </h2>
+                        <span data-toggle="modal" data-target="#modal-rank-show-all" class="btn btn-primary label label-primary">Show all</span>
+                    </div>
+                    <input type="text" class="form-control" id="search-rank" placeholder="Search..." title="Type in a name">
+                    <br>
+                    <table id="rank-table" class="table table-striped text-center">
+                        <thead>
+                            <tr class="header-rankview">
+                                <th class="text-center" scope="col" onclick='sortView("rank-table", 0)'>Date</th>
+                                <th class="text-center" scope="col" onclick='sortView("rank-table", 1)'>Code</th>
+                                <th class="text-center" scope="col" onclick='sortView("rank-table", 2)'>Module</th>
+                                <th class="text-center" scope="col" onclick='sortView("rank-table", 3)'>Rank</th>
+                                <th class="text-center" scope="col" onclick='sortView("rank-table", 4)'>Credits</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- HERE GOES THE RESPONSIVE TAB FROM USER.JS -->
+                        </tbody>
+                    </table>
+                    <div class="text-center">
+                        <ul id="rank-pagination" class="pagination"></ul>
+                    </div>
+                </div>
+                <div class="row mark-view" style="margin-top: 7%; display: none;">
+                    <div style="margin-bottom: 3%">
+                        <h2 class="inline">Marks </h2>
+                        <span data-toggle="modal" data-target="#modal-mark-show-all" class="btn btn-primary label label-primary">Show all</span>
+                    </div>
+                    <input type="text" class="form-control" id="search-mark" placeholder="Search..." title="Type in a name">
+                    <br>
+                    <table id="mark-table" class="table table-striped text-center">
+                        <thead>
+                            <tr class="header-markview">
+                                <th class="text-center" scope="col" onclick='sortView("mark-table", 0)'>Date</th>
+                                <th class="text-center" scope="col" onclick='sortView("mark-table", 1)'>Module</th>
+                                <th class="text-center" scope="col" onclick='sortView("mark-table", 2)'>Activity</th>
+                                <th class="text-center" scope="col" onclick='sortView("mark-table", 3)'>
+                                    <div data-toggle="tooltip" title="Hover over the marks!" style="text-decoration: underline wavy">
+                                        Mark
+                                    </div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- HERE GOES THE RESPONSIVE TAB FROM USER.JS -->
+                        </tbody>
+                    </table>
+                    <div class="text-center">
+                        <ul id="mark-pagination" class="pagination"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </body>
 

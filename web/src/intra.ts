@@ -1,3 +1,4 @@
+import Promise = require('promise');
 import https = require('https');
 import zlib = require('zlib');
 import vars = require('../vars');
@@ -34,13 +35,26 @@ function getData(autologin: string, callback: (data: { [key: string]: any } | Er
                     let rawData: string = "";
                     res.on("data", (d) => { rawData += d; });
                     res.on("end", (d) => {
-                        zlib.deflate(new Buffer(rawData), (err, res) => {
-                            if (err) throw err;
-                            data.mark = res;
-                            return callback(data);
+                        let jsonData = JSON.parse(rawData);
+                        let pMark = new Promise((resolve, reject) => {
+                            zlib.deflate(new Buffer(JSON.stringify(jsonData.notes)), (err, res) => {
+                                if (err) reject(err);
+                                data.mark = res;
+                                resolve();
+                            });
                         });
-                    })
-                })
+                        let pRank = new Promise((resolve, reject) => {
+                            zlib.deflate(new Buffer(JSON.stringify(jsonData.modules)), (err, res) => {
+                                if (err) reject(err);
+                                data.rank = res;
+                                resolve();
+                            });
+                        });
+                        Promise.all([pMark, pRank]).then(() => {
+                            return callback(data);
+                        }, (err) => { throw err; });
+                    });
+                });
                 req.on("error", (err) => {
                     return callback(undefined);
                 });
@@ -58,18 +72,19 @@ function getData(autologin: string, callback: (data: { [key: string]: any } | Er
 }
 
 function setData(id, data) {
-    let queryString = "UPDATE user SET city = ?, promo = ?, gpa = ?, mark = ?, credit = ?, current_week_log = ? WHERE id = ?";
+    let queryString = "UPDATE user SET city = ?, promo = ?, gpa = ?, rank = ?, mark = ?, credit = ?, current_week_log = ? WHERE id = ?";
     let gpa = 0.0;
     for (let i = 0; i < data.gpa.length; ++i) {
         if (data.gpa[i].cycle == "bachelor")
-        gpa = parseFloat(data.gpa[i].gpa);
+            gpa = parseFloat(data.gpa[i].gpa);
     }
     let city = data.location;
     let promo = data.promo;
     let credit = parseInt(data.credits);
     let current_week_log = parseFloat(data.nsstat.active);
+    let rank = data.rank;
     let mark = data.mark;
-    con.query(queryString, [city, promo, gpa, mark, credit, current_week_log, id], (err, result) => {
+    con.query(queryString, [city, promo, gpa, rank, mark, credit, current_week_log, id], (err, result) => {
         if (err) throw err;
     });
 }

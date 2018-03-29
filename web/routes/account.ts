@@ -1,4 +1,5 @@
 import express = require('express');
+import Promise = require('promise');
 var router = express.Router();
 import { withLog, withLogin, withAPILogin } from '../src/middleware';
 import { login, register, getUser, getAllUsers, getUserWithEmail, newPassword } from '../src/account';
@@ -30,7 +31,25 @@ router.get('/api/user', withAPILogin, (req, res) => {
             user.gpa = (req.user.gpa) ? user.gpa : undefined;
             user.credit = (req.user.credit) ? user.credit : undefined;
             user.current_week_log = (req.user.current_week_log) ? user.current_week_log : undefined;
-            res.status(200).send({ user });
+            let fillRank = new Promise((resolve, reject) => {
+                if (!req.user.show_rank)
+                    return resolve();
+                user.fillRank((err) => {
+                    if (err) reject(err);
+                    else resolve();
+                });
+            });
+            let fillMark = new Promise((resolve, reject) => {
+                if (!req.user.show_mark)
+                    return resolve();
+                user.fillMark((err) => {
+                    if (err) reject(err);
+                    else resolve();
+                });
+            });
+            Promise.all([fillRank, fillMark]).then(() => {
+                res.status(200).send({ user });
+            });
         });
 });
 
@@ -89,7 +108,7 @@ router.post('/api/password', withAPILogin, (req, res) => {
                 res.status(403).send({ error: "Request failed. Please re-try." });
             else
                 res.status(200).send({ message: "You changed your password with success." });;
-    });
+        });
 });
 
 router.get('/register', (req, res) => {
