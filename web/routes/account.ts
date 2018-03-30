@@ -2,7 +2,7 @@ import express = require('express');
 import Promise = require('promise');
 var router = express.Router();
 import { withLog, withLogin, withAPILogin } from '../src/middleware';
-import { login, register, getUser, getAllUsers, getUserWithEmail, newPassword } from '../src/account';
+import { login, register, getUser, getAllUsers, getUserWithEmail, newPassword, autologin, newautologin } from '../src/account';
 import { con } from '../vars';
 import { error } from 'util';
 
@@ -99,12 +99,40 @@ router.post('/api/register', (req, res) => {
 });
 
 router.post('/api/password', withAPILogin, (req, res) => {
-        newPassword(req.user.email, req.body.passwordConfirm, (error?) => {
+    newPassword(req.user.email, req.body.passwordConfirm, (error?) => {
+        if (error)
+            res.status(403).send({ error: "Request failed. Please re-try." });
+        else
+            res.status(200).send({ message: "You changed your password with success." });;
+    });
+});
+
+router.get('/api/autologin', withAPILogin, (req, res) => {
+    let token = req.cookies.token
+    if (!token)
+    res.status(403).send({ error: "Token not found" });
+    getUser(token, (err, user) => {
+        autologin(user.email, (error, autologin) => {
             if (error)
                 res.status(403).send({ error: "Request failed. Please re-try." });
             else
-                res.status(200).send({ message: "You changed your password with success." });;
+                res.status(200).send({ autologin: autologin });
         });
+    });
+});
+
+router.post('/api/settings', withAPILogin, (req, res) => {
+    let token = req.cookies.token
+    if (!token)
+        res.status(403).send({ error: "Token not found" });
+    getUser(token, (err, user) => {
+        newautologin(user.email, req.body.autologin, req.body.gpa, req.body.credit, req.body.log, req.body.marks, req.body.moduleGrade, (error?) => {
+            if (error)
+                res.status(403).send({ error: "Request failed. Please re-try." });
+            else
+                res.status(200).send({ message: "You saved your personnal settings with success!" });
+        });
+    });
 });
 
 router.get('/register', (req, res) => {

@@ -1,3 +1,13 @@
+.fade.in {
+  text-align: center;
+  opacity: 1;
+}
+
+.fade.out {
+  text-align: center;
+  opacity: 0;
+}
+
 .form button {
     font-family: "Roboto", sans-serif;
     text-transform: uppercase;
