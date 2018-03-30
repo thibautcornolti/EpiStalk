@@ -87,8 +87,13 @@ router.get('/logout', (req, res) => {
 
 router.post('/api/register', (req, res) => {
     if (req.body.email == undefined || req.body.email.length == 0 ||
-        req.body.pass == undefined || req.body.pass.length == 0)
+        req.body.pass == undefined || req.body.pass.length == 0) {
         res.status(403).send({ warning: "Empty field" });
+        return;
+    }
+    let reg = req.body.email.match(/[a-z]+\.[a-z]+@epitech.eu/i)
+    if (!reg || reg[0] != req.body.email)
+        res.status(403).send({ warning: "Invalid email" });
     else
         register(req.body.email, req.body.pass, (error?) => {
             if (error)

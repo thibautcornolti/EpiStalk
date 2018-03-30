@@ -1,10 +1,17 @@
-$('.message a').click(function () {
-    toggleForm();
-});
 
-$("#login").on("click", login);
-$("#register").on("click", register);
-$('#close').on('click', hideAlert);
+$(document).ready(function () {
+    $("#lmail").on("keyup", function () {
+        console.log($(this).val())
+    });
+
+    $('.message a').click(function () {
+        toggleForm();
+    });
+    
+    $("#login").on("click", login);
+    $("#register").on("click", register);
+    $('#close').on('click', hideAlert);
+});
 
 $("#close").fadeOut();
 
