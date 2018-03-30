@@ -96,6 +96,28 @@ function newPassword(email: string, newPassword: string, callback: (error: Error
     });
 }
 
+function autologin(email: string, callback: (error: Error, autologin?) => any): void {
+    let queryString = "SELECT autologin FROM user WHERE email = ?";
+    con.query(queryString, [email], (err, result_user) => {
+        if (err) return callback(err);
+        if (result_user.length == 0)
+            return callback(Error("user not found"));
+        if (result_user[0].autologin == "")
+            return callback(undefined, 0);
+        return callback(undefined, 1);
+    });
+}
+
+function newautologin(email: string, autologin: string, gpa: number, credit: number, log: number, marks: number, moduleGrade: number, callback: (error: Error) => any): void {
+    let queryString = "UPDATE user SET autologin = ?, show_gpa = ?, show_credit = ?, show_log = ?, show_mark = ?, show_rank = ? WHERE email = ?";
+    con.query(queryString, [autologin, gpa, credit, log, marks, moduleGrade, email], (err, result_user) => {
+        if (err) return callback(err);
+        if (result_user.length == 0)
+            return callback(Error("user not found"));
+        return callback(undefined);
+    });
+}
+
 function login(email: string, password: string, expiresIn: string, callback: (error: Error, token?) => any): void {
     let queryString = "SELECT id, password FROM user WHERE email = ?";
     con.query(queryString, [email], (err, result_user) => {
@@ -178,4 +200,4 @@ function getAllUsers(token: string, callback: (error: Error, user?: Array<User>)
     });
 };
 
-export { register, login, getUser, getUserWithEmail, getAllUsers, newPassword }
+export { register, login, getUser, getUserWithEmail, getAllUsers, newPassword, autologin, newautologin }

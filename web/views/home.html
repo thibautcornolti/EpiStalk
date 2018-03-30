@@ -74,6 +74,66 @@
             </div>
         </div>
     </nav>
+    <div class="modal fade" id="modalSetting" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title text-center">Epistalk's setting starter</h3>
+                </div>
+                <div class="modal-body">
+                    <label for="usr">Autologin address:</label>
+                    <input type="text" class="form-control" placeholder="Please write your autologin link..." id="autologin">
+                    <small id="autologinHelp" class="form-text text-muted">We'll never share your autologin link with anyone else.</small>
+                </div>
+                <h3 class="text-center" style="margin-bottom:3%">Personnal preferences</h3>
+                <div style="margin-bottom:2%;margin-left:2%;">
+                    <p style="margin-bottom:2%">
+                        <input type="checkbox" id="check-gpa" checked />
+                        <span class="checkboxtext">
+                            Would you share your
+                            <strong>GPA</strong> and see others ?
+                        </span>
+                    </p>
+                    <p style="margin-bottom:2%">
+                        <input type="checkbox" id="check-log" checked/>
+                        <span class="checkboxtext">
+                            Would you share your
+                            <strong>current week log</strong> and see others ?
+                        </span>
+                    </p>
+                    <p style="margin-bottom:2%">
+                        <input type="checkbox" id="check-credits" checked/>
+                        <span class="checkboxtext">
+                            Would you share
+                            <strong>all of your credits</strong> and see others ?
+                        </span>
+                    </p>
+                    <p style="margin-bottom:2%">
+                        <input type="checkbox" id="check-marks" checked/>
+                        <span class="checkboxtext">
+                            Would you share
+                            <strong>all of your marks</strong> and see others ?
+                        </span>
+                    </p>
+                    <p style="margin-bottom:2%">
+                        <input type="checkbox" id="check-module" checked/>
+                        <span class="checkboxtext">
+                            Would you share
+                            <strong>all of your module validation</strong> and see others ?
+                        </span>
+                    </p>
+                </div>
+                <div class="alert fade text-center" id="bsalert">
+                    <a href="#" id="close" class="close" aria-label="close">&times;</a>
+                    <strong id=alert-msg>alert-msg</strong>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white" id='close'>Close</button>
+                    <button type="button" class="btn btn-primary" id='save-click'>Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <div style="width:80%; margin: 0 auto;">
         <input type="text" class="form-control" id="search-leaderboard" placeholder="Search..." title="Type in a name">
         <br>
@@ -97,7 +157,7 @@
         <div class="text-center">
             <h1 class="spinner-leaderboard glyphicon glyphicon-refresh glyphicon-refresh-animate"></h1>
         </div>
-    </table>
+        </table>
 </body>
 
 </html>
