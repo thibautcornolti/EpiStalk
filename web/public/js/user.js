@@ -26,9 +26,6 @@ function main() {
     setMarkView();
 }
 
-let rankCurrentPagination = 0;
-let markCurrentPagination = 0;
-
 function setRankView() {
     if (!user.show_rank)
         $(".rank-view").html('\
@@ -69,10 +66,19 @@ function setMarkView() {
     $(".mark-view").toggle(true);
 }
 
+function alignCellsSize(table) {
+    $(document).ready(() => {
+        let tdHeader = document.getElementById(table + "-table-header").rows[0].cells;
+        let tdData = document.getElementById(table + "-table-data").rows[0].cells;
+        for (let i = 0; i < tdData.length; i++)
+            tdHeader[i].style.width = tdData[i].offsetWidth + 'px';
+    });
+}
+
 function buildRankview(all) {
     let ranks = JSON.parse(puser.rank);
     let limit = (all || ranks.length <= 30) ? 0 : ranks.length - 30;
-    $("#rank-table").find('tbody').html("");
+    $("#rank-table-data").find('tbody').html("");
     if (ranks.length > 0)
         for (let i = ranks.length - 1; i >= limit; i--) {
             let tab = '<tr class="center">' +
@@ -82,9 +88,9 @@ function buildRankview(all) {
                 '<td>' + ranks[i].grade + '</td>' +
                 '<td>' + ranks[i].credits + '</td>' +
                 '</tr>'
-            $("#rank-table").find('tbody').append(tab);
+            $("#rank-table-data").find('tbody').append(tab);
         }
-    limitViewNbRow("rank");
+    alignCellsSize("rank");
 }
 
 function buildMarkview(all) {
@@ -104,7 +110,7 @@ function buildMarkview(all) {
     }
     let marks = JSON.parse(puser.mark);
     let limit = (all || marks.length <= 30) ? 0 : marks.length - 30;
-    $("#mark-table").find('tbody').html("");
+    $("#mark-table-data").find('tbody').html("");
     if (marks.length > 0)
         for (let i = marks.length - 1; i >= limit; i--) {
             let summary = '<b>Comment:</b><br>' + marks[i].comment + '<br>' +
@@ -119,30 +125,12 @@ function buildMarkview(all) {
                 '<td>' + marks[i].title + '</td>' +
                 buildCellWithTooltip(marks[i].final_note, summary, ' mark="' + marks[i].final_note + '"') +
                 '</tr>'
-            $("#mark-table").find('tbody').append(tab);
+            $("#mark-table-data").find('tbody').append(tab);
         }
-    limitViewNbRow("mark");
     $(document).ready(function () {
         $('[data-toggle="tooltip"]').tooltip();
     });
-}
-
-function limitViewNbRow(table) {
-    $('#' + table + '-pagination').html("");
-    let i = 0;
-    $('#' + table + '-table > tbody > tr').each(function () {
-        if (i < rankCurrentPagination * 10 || i >= (rankCurrentPagination + 1) * 10)
-            $(this).toggle(false);
-        else
-            $(this).toggle(true);
-        i += 1;
-    });
-    for (let o = 1; o < i / 10 + 1; o++)
-        $('#' + table + '-pagination').append('<li' + (rankCurrentPagination + 1 == o ? ' class="active"' : '') + '><a>' + o + '</li>');
-    $("#" + table + "-pagination li").on("click", function () {
-        rankCurrentPagination = parseInt($(this).text()) - 1;
-        limitViewNbRow(table);
-    });
+    alignCellsSize("mark");
 }
 
 function sortView(tableid, n) {
@@ -155,7 +143,7 @@ function sortView(tableid, n) {
     while (switching) {
         switching = false;
         rows = table.getElementsByTagName("TR");
-        for (i = 1; i < (rows.length - 1); i++) {
+        for (i = 0; i < (rows.length - 1); i++) {
             shouldSwitch = false;
             if (rows[i].getElementsByTagName("TD")[n].hasAttribute("mark")) {
                 x = parseInt(rows[i].getElementsByTagName("TD")[n].getAttribute("mark"));
@@ -192,11 +180,13 @@ function sortView(tableid, n) {
             }
         }
     }
-    limitViewNbRow("rank");
-    limitViewNbRow("mark");
 }
 
 $(document).ready(function () {
+    $(window).on("resize", () => {
+        alignCellsSize("rank");
+        alignCellsSize("mark");
+    });
     $("#search-rank").on("keyup", function () {
         var values = $(this).val().toLowerCase().split(' ');
         $("#rank-table tr").filter(function () {

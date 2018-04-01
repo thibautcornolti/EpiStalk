@@ -3,8 +3,8 @@
 
 <head>
     <title>TA GROSSE MERE</title>
-    <link rel="stylesheet" type="text/css" href="/public/css/user.css"/>
-    <link rel="stylesheet" type="text/css" href="/public/css/common.css"/>
+    <link rel="stylesheet" type="text/css" href="/public/css/user.css" />
+    <link rel="stylesheet" type="text/css" href="/public/css/common.css" />
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -14,29 +14,6 @@
 </head>
 
 <body class="noselect">
-    <div class="container">
-        <h2>Large Modal</h2>
-        <!-- Trigger the modal with a button -->
-        <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Open Large Modal</button>
-      
-        <!-- Modal -->
-        <div class="modal fade" id="myModal" role="dialog">
-          <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-              <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">Modal Header</h4>
-              </div>
-              <div class="modal-body">
-                <p>This is a large modal.</p>
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
     <!-- Modal rank show all -->
     <div id="modal-rank-show-all" class="modal fade" role="dialog">
         <div class="modal-dialog">
@@ -111,24 +88,29 @@
                     </div>
                     <input type="text" class="form-control" id="search-rank" placeholder="Search..." title="Type in a name">
                     <br>
-                    <table id="rank-table" class="table table-striped text-center">
-                        <thead>
-                            <tr class="header-rankview">
-                                <th class="text-center" scope="col" onclick='sortView("rank-table", 0)'>Date</th>
-                                <th class="text-center" scope="col" onclick='sortView("rank-table", 1)'>Code</th>
-                                <th class="text-center" scope="col" onclick='sortView("rank-table", 2)'>Module</th>
-                                <th class="text-center" scope="col" onclick='sortView("rank-table", 3)'>Rank</th>
-                                <th class="text-center" scope="col" onclick='sortView("rank-table", 4)'>Credits</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- HERE GOES THE RESPONSIVE TAB FROM USER.JS -->
-                        </tbody>
-                    </table>
-                    <div class="text-center">
-                        <ul id="rank-pagination" class="pagination"></ul>
+                    <div style="margin-right:10px">
+                        <table id="rank-table-header" class="table table-striped text-center" style="margin-bottom: 0px;">
+                            <thead>
+                                <tr class="header-rankview">
+                                    <th class="text-center" scope="col" onclick='sortView("rank-table-data", 0)'>Date</th>
+                                    <th class="text-center" scope="col" onclick='sortView("rank-table-data", 1)'>Code</th>
+                                    <th class="text-center" scope="col" onclick='sortView("rank-table-data", 2)'>Module</th>
+                                    <th class="text-center" scope="col" onclick='sortView("rank-table-data", 3)'>Rank</th>
+                                    <th class="text-center" scope="col" onclick='sortView("rank-table-data", 4)'>Credits</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                    <div style="height:10cm; overflow-y:auto;">
+                        <table id="rank-table-data" class="table table-striped text-center">
+                            <tbody>
+                                <!-- HERE GOES THE RESPONSIVE TAB FROM USER.JS -->
+                            </tbody>
+                        </table>
                     </div>
                 </div>
+
+
                 <div class="row mark-view" style="margin-top: 7%; display: none;">
                     <div style="margin-bottom: 3%">
                         <h2 class="inline">Marks </h2>
@@ -136,23 +118,29 @@
                     </div>
                     <input type="text" class="form-control" id="search-mark" placeholder="Search..." title="Type in a name">
                     <br>
-                    <table id="mark-table" class="table table-striped text-center">
-                        <thead>
-                            <tr class="header-markview">
-                                <th class="text-center" scope="col" onclick='sortView("mark-table", 0)'>Date</th>
-                                <th class="text-center" scope="col" onclick='sortView("mark-table", 1)'>Module</th>
-                                <th class="text-center" scope="col" onclick='sortView("mark-table", 2)'>Activity</th>
-                                <th class="text-center" scope="col" onclick='sortView("mark-table", 3)'>
-                                    <div data-toggle="tooltip" title="Hover over the marks!" style="text-decoration: underline wavy">
-                                        Mark
-                                    </div>
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- HERE GOES THE RESPONSIVE TAB FROM USER.JS -->
-                        </tbody>
-                    </table>
+                    <div style="margin-right:10px">
+                        <table id="mark-table-header" class="table table-striped text-center" style="margin-bottom: 0px;">
+                            <thead>
+                                <tr class="header-markview">
+                                    <th class="text-center" scope="col" onclick='sortView("mark-table-data", 0)'>Date</th>
+                                    <th class="text-center" scope="col" onclick='sortView("mark-table-data", 1)'>Module</th>
+                                    <th class="text-center" scope="col" onclick='sortView("mark-table-data", 2)'>Activity</th>
+                                    <th class="text-center" scope="col" onclick='sortView("mark-table-data", 3)'>
+                                        <div data-toggle="tooltip" title="Hover over the marks!" style="text-decoration: underline wavy">
+                                            Mark
+                                        </div>
+                                    </th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                    <div style="height:10cm; overflow-y:auto;">
+                        <table id="mark-table-data" class="table table-striped text-center">
+                            <tbody>
+                                <!-- HERE GOES THE RESPONSIVE TAB FROM USER.JS -->
+                            </tbody>
+                        </table>
+                    </div>
                     <div class="text-center">
                         <ul id="mark-pagination" class="pagination"></ul>
                     </div>
