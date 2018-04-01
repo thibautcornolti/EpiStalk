@@ -4,27 +4,24 @@ let puser;
 $.urlParam = function (name) {
     let results = new RegExp('[\?&]' + name + '=([^&#]*)')
         .exec(window.location.href);
-    return (results) ? results[1] : "";
+    return (results) ? results[1] : undefined;
 }
 
 $(document).ready(function () {
     $.get("/api/user", function (data) {
         user = data.user;
-        $.get("/api/user?login=" + $.urlParam("login"), function (data) {
+        paramLogin = $.urlParam("login");
+        $.get("/api/user?login=" + (paramLogin ? paramLogin : user.email), function (data) {
             puser = data.user;
-            main();
+            setPuserFields();
+            setPuserPictures();
+            setRankView();
+            setMarkView();
         });
-    })
+        setUserFields();
+        setLoginFields();
+    });
 });
-
-function main() {
-    setUserFields();
-    setLoginFields();
-    setPuserFields();
-    setPuserPictures();
-    setRankView();
-    setMarkView();
-}
 
 function setRankView() {
     if (!user.show_rank)
