@@ -1,23 +1,21 @@
 let user;
 let users;
 
-$.get("/api/user", function (data) {
-    user = data.user;
-    $.get("/api/users", function (data) {
-        users = data.users;
-        main();
+$(document).ready(function () {
+    $.get("/api/user", function (data) {
+        user = data.user;
+        setUserFields();
+        $.get("/api/users", function (data) {
+            users = data.users;
+            buildLeaderboard();
+
+            $("#leaderboard-data tr").on("click", function () {
+                if ($(this).hasClass("user-leaderboard"))
+                    $(location).attr("href", "/user?login=" + $(this).attr("login"))
+            });
+        })
     })
-})
-
-function main() {
-    setUserFields();
-    buildLeaderboard();
-
-    $("#leaderboard tr").on("click", function () {
-        if ($(this).hasClass("user-leaderboard"))
-            $(location).attr("href", "/user?login="+$(this).attr("login"))
-    });
-}
+});
 
 /* Replace all fields with the "get-upper-user" attribute with the user name. */
 function setUserFields() {
@@ -54,7 +52,7 @@ function buildLeaderboard() {
         let log = buildCell(i, "current_week_log", "log time", false);
         let lastName = users[i].email.toUpperCase().split('@')[0].split('.')[1];
         let firstName = users[i].email.split('.')[0].toUpperCase();
-        let tab = '<tr login="'+users[i].email+'" class="center user-leaderboard">' +
+        let tab = '<tr login="' + users[i].email + '" class="center user-leaderboard">' +
             '<th class="center" scope="row">' + (i + 1) + '</th>' +
             '<td>' + firstName + '</td>' +
             '<td>' + lastName + '</td>' +
@@ -62,22 +60,23 @@ function buildLeaderboard() {
             '<td>' + users[i].promo + '</td>' +
             log + credit + gpa +
             '</tr>'
-        $("#leaderboard").find('tbody').append(tab);
+        $("#leaderboard-data").find('tbody').append(tab);
     }
     $(document).ready(function () {
         $('[data-toggle="tooltip"]').tooltip();
     });
+    alignCellsSize();
 }
 
 function sortLeaderboard(n) {
     var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
-    table = document.getElementById("leaderboard");
+    table = document.getElementById("leaderboard-data");
     switching = true;
     dir = "asc";
     while (switching) {
         switching = false;
         rows = table.getElementsByTagName("TR");
-        for (i = 1; i < (rows.length - 1); i++) {
+        for (i = 0; i < (rows.length - 1); i++) {
             shouldSwitch = false;
             x = rows[i].getElementsByTagName("TD")[n].innerHTML.toLowerCase();
             y = rows[i + 1].getElementsByTagName("TD")[n].innerHTML.toLowerCase();
@@ -110,16 +109,32 @@ function sortLeaderboard(n) {
     }
 }
 
+function alignCellsSize() {
+    $(document).ready(() => {
+        let tdHeader = document.getElementById("leaderboard-header").rows[0].cells;
+        let tdDatas = document.getElementById("leaderboard-data").rows;
+        let tdData = tdDatas[0].cells;
+        for (let i = 0; i < tdDatas.length; i++)
+            if (tdDatas[i].style.display.indexOf("none") < 0) {
+                tdData = tdDatas[i].cells;
+                break;
+            }
+        for (let i = 0; i < tdData.length; i++)
+            tdHeader[i].style.width = tdData[i].offsetWidth + 'px';
+    });
+}
+
 $(document).ready(function () {
     $("#search-leaderboard").on("keyup", function () {
         var values = $(this).val().toLowerCase().split(' ');
-        $("#leaderboard tr").filter(function () {
+        $("#leaderboard-data tr").filter(function () {
             if (!$(this).hasClass("header-leaderboard")) {
                 let show = true;
                 for (let i = 0; i < values.length; ++i)
                     show = ($(this).text().toLowerCase().indexOf(values[i]) < 0) ? false : show;
                 $(this).toggle(show);
             }
+            alignCellsSize();
         });
     });
 });

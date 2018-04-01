@@ -186,24 +186,26 @@ $(document).ready(function () {
     });
     $("#search-rank").on("keyup", function () {
         var values = $(this).val().toLowerCase().split(' ');
-        $("#rank-table tr").filter(function () {
+        $("#rank-table-data tr").filter(function () {
             if (!$(this).hasClass("header-rankview")) {
                 let show = true;
                 for (let i = 0; i < values.length; ++i)
                     show = ($(this).text().toLowerCase().indexOf(values[i]) < 0) ? false : show;
                 $(this).toggle(show);
             }
+            alignCellsSize("rank");
         });
     });
     $("#search-mark").on("keyup", function () {
         var values = $(this).val().toLowerCase().split(' ');
-        $("#mark-table tr").filter(function () {
+        $("#mark-table-data tr").filter(function () {
             if (!$(this).hasClass("header-markview")) {
                 let show = true;
                 for (let i = 0; i < values.length; ++i)
                     show = ($(this).text().toLowerCase().indexOf(values[i]) < 0) ? false : show;
                 $(this).toggle(show);
             }
+            alignCellsSize("mark");
         });
     });
     $("#rank-show-all").on("click", function () {
@@ -229,13 +231,18 @@ function setPuserFields() {
     if (puser) {
         let name = puser.email.split("@")[0].toUpperCase().replace(".", " ");
         $(".get-upper-puser").text(name);
-        $(".get-puser-promo").text(puser.promo);
-        $(".get-puser-city").text(puser.city);
-    } else {
-        $(".get-upper-puser").text("NaN");
-        $(".get-puser-promo").text("NaN");
-        $(".get-puser-city").text("NaN");
     }
+    let refs = [["promo", ""], ["city", ""], ["gpa", "GPA"], ["current_week_log", "log time"], ["credit", "credits"]];
+    console.log(user)
+    for (let i = 0; i < refs.length; ++i)
+        if (puser[refs[i][0]])
+            $(".get-puser-" + refs[i][0]).text(puser[refs[i][0]]);
+        else if (puser && user[refs[i][0]])
+            $(".get-puser-" + refs[i][0]).html("<span data-toggle='tooltip' data-placement='top' title='This user has hidden his " + refs[i][1] + "'>?</span>");
+        else if (puser)
+        $(".get-puser-" + refs[i][0]).html("<span data-toggle='tooltip' data-placement='top' title='Share your " + refs[i][1] + " to see others!'><a href='/settings'>?</a></span>");
+        else
+            $(".get-puser-" + refs[i][0]).text("NaN");
     $(".puser-loading-hide").toggle(false);
     $(".puser-loading-show").toggle(true);
 }
