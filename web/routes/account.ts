@@ -2,7 +2,11 @@ import express = require('express');
 import Promise = require('promise');
 var router = express.Router();
 import { withLog, withLogin, withAPILogin } from '../src/middleware';
-import { login, register, getUser, getAllUsers, getUserWithEmail, newPassword, autologin, newautologin } from '../src/account';
+import {
+    login, register, getUser, getAllUsers, getUserWithEmail,
+    newPassword, hasAutoLogin, setPreferences,
+} from '../src/account';
+import { getLoginWithAutologin, fillDb } from '../src/intra'
 import { con } from '../vars';
 import { error } from 'util';
 
@@ -106,38 +110,46 @@ router.post('/api/register', (req, res) => {
 router.post('/api/password', withAPILogin, (req, res) => {
     newPassword(req.user.email, req.body.passwordConfirm, (error?) => {
         if (error)
-            res.status(403).send({ error: "Request failed. Please re-try." });
+            res.status(403).send({ error: "An error was occured. Please try again." });
         else
-            res.status(200).send({ message: "You changed your password with success." });;
+            res.status(200).send({ message: "You successfully changed your password." });;
     });
 });
 
 router.get('/api/autologin', withAPILogin, (req, res) => {
-    let token = req.cookies.token
-    if (!token)
-    res.status(403).send({ error: "Token not found" });
-    getUser(token, (err, user) => {
-        autologin(user.email, (error, autologin) => {
-            if (error)
-                res.status(403).send({ error: "Request failed. Please re-try." });
-            else
-                res.status(200).send({ autologin: autologin });
-        });
+    hasAutoLogin(req.user.email, (error, has) => {
+        if (error)
+            res.status(403).send({ error: "An error was occured. Please try again." });
+        else
+            res.status(200).send({ autologin: has });
     });
 });
 
-router.post('/api/settings', withAPILogin, (req, res) => {
-    let token = req.cookies.token
-    if (!token)
-        res.status(403).send({ error: "Token not found" });
-    getUser(token, (err, user) => {
-        newautologin(user.email, req.body.autologin, req.body.gpa, req.body.credit, req.body.log, req.body.marks, req.body.moduleGrade, (error?) => {
-            if (error)
-                res.status(403).send({ error: "Request failed. Please re-try." });
+router.post('/api/preferences', withAPILogin, (req, res) => {
+    let show = {
+        gpa: req.body.show_gpa,
+        credit: req.body.show_credit,
+        log: req.body.show_log,
+        mark: req.body.show_mark,
+        rank: req.body.show_rank,
+    }
+    if (!req.body.autologin)
+        return res.status(403).send({ error: "Wrong autologin." });
+    let reg = req.body.autologin.match(/https:\/\/intra.epitech.eu\/auth-/i);
+    if (!reg || reg.index)
+        res.status(403).send({ error: "Wrong autologin." });
+    else
+        getLoginWithAutologin(req.body.autologin, (error, login) => {
+            if (login != req.user.email)
+                res.status(403).send({ error: "This autologin is not yours!" });
             else
-                res.status(200).send({ message: "You saved your personnal settings with success!" });
+                setPreferences(req.user.email, req.body.autologin, show, (error?) => {
+                    if (error)
+                        res.status(403).send({ error: "An error was occured. Please try again." });
+                    else
+                        res.status(200).send({ message: "You successfully saved your preferences!" });
+                });
         });
-    });
 });
 
 router.get('/register', (req, res) => {

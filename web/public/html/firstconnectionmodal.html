@@ -1,0 +1,81 @@
+<div class="modal fade" id="modal-preferences" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title text-center">Epistalk's preferences</h3>
+            </div>
+            <div class="modal-body">
+                <h3 class="text-center" style="margin-bottom:3%;">Autologin</h3>
+                <div style="margin-left:4%;">
+                    <div class="form-group has-feedback" id="div-autologin-preferences">
+                        <label for="input-autologin-preferences">Your AutoLogin link:</label>
+                        <input id="input-autologin-preferences" type="text" class="form-control" placeholder="https://intra.epitech.eu/auth-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx">
+                        <span id="feedback-autologin-preferences" class="glyphicon form-control-feedback"></span>
+                        <small id="tip-autologin-preferences" class="form-text text-muted fade" style="color: saddlebrown;">https://intra.epitech.eu/auth-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</small>
+                    </div>
+                    <br>
+                    <div class="form-text text-muted">
+                        <p>You can find your autologin
+                            <a href="https://intra.epitech.eu/admin/autolog">here</a>.</p>
+                        <p>Epistalk needs your autologin to fetch your
+                            <b>GPA</b>,
+                            <b>credits</b>,
+                            <b>log time</b>,
+                            <b>marks</b> and
+                            <b>ranks</b>.
+                        </p>
+                        <p>Don't worry, you choose what you want to share and therefore what you can see!</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-body">
+                <h3 class="text-center" style="margin-bottom:3%;">Sharing preferences</h3>
+                <div style="margin-left:4%;">
+                    <p style="margin-bottom:2%;">
+                        <input type="checkbox" id="checkbox-gpa-preferences" checked/>
+                        <label for="checkbox-gpa-preferences" id="label-gpa-preferences" style="margin-left: 10px; font-weight: normal;">
+                            Would you share your
+                            <b>GPA</b> and see others ?
+                        </label>
+                    </p>
+                    <p style="margin-bottom:2%;">
+                        <input type="checkbox" id="checkbox-log-preferences" checked/>
+                        <label for="checkbox-log-preferences" id="label-log-preferences" style="margin-left: 10px; font-weight: normal;">
+                            Would you share your
+                            <b>log time</b> and see others ?
+                        </label>
+                    </p>
+                    <p style="margin-bottom:2%;">
+                        <input type="checkbox" id="checkbox-credits-preferences" checked/>
+                        <label for="checkbox-credits-preferences" id="label-credits-preferences" style="margin-left: 10px; font-weight: normal;">
+                            Would you share your
+                            <b>credits</b> and see others ?
+                        </label>
+                    </p>
+                    <p style="margin-bottom:2%;">
+                        <input type="checkbox" id="checkbox-marks-preferences" checked/>
+                        <label for="checkbox-marks-preferences" id="label-marks-preferences" style="margin-left: 10px; font-weight: normal;">
+                            Would you share your
+                            <b>marks</b> and see others ?
+                        </label>
+                    </p>
+                    <p>
+                        <input type="checkbox" id="checkbox-module-preferences" checked/>
+                        <label for="checkbox-ranks-preferences" id="label-ranks-preferences" style="margin-left: 10px; font-weight: normal;">
+                            Would you share your
+                            <b>ranks</b> and see others ?
+                        </label>
+                    </p>
+                </div>
+            </div>
+            <div class="alert fade text-center" id="alert-preferences">
+                <a href="#" id="close-alert-preferences" class="close" style="display: none;">&times;</a>
+                <b id=alert-msg>&nbsp;</b>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-white" id='close-preferences'>Close</button>
+                <button type="button" class="btn btn-primary disabled" id='save-preferences'>Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>

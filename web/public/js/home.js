@@ -1,4 +1,3 @@
-
 let user;
 let users;
 
@@ -10,46 +9,13 @@ $.get("/api/user", function (data) {
     })
 })
 
-
 function main() {
     setUserFields();
     buildLeaderboard();
-    
-    $.get("/api/autologin", function (data) {
-        if (data.autologin == 0)
-            $("#modalSetting").modal('show');
-    }).fail(function (data, textStatus, xhr) {
-        $(location).attr('href', '/login');
-    });
-    $("#close").fadeOut();
-    $('#close').on('click', hideAlert);
-    $("#save-click").on("click", save);
+
     $("#leaderboard tr").on("click", function () {
         if ($(this).hasClass("user-leaderboard"))
             $(location).attr("href", "/user?login="+$(this).attr("login"))
-    });
-}
-
-
-function save() {
-    let autologin = $("#autologin").val();
-    let gpa = $('#check-gpa').is(":checked") ? '1' : '0'
-    let credit = $('#check-credits').is(":checked") ? '1' : '0'
-    let log = $('#check-log').is(":checked") ? '1' : '0'
-    let marks = $('#check-marks').is(":checked") ? '1' : '0'
-    let moduleGrade = $('#check-module').is(":checked") ? '1' : '0'
-    
-    if (autologin == "" || autologin == undefined) {
-        hideAlert();
-        showAlert('Empty Field!', "alert-warning")
-    }
-    $.post("/api/settings", {autologin, gpa, credit, log, marks, moduleGrade}, function (data) {
-        hideAlert();
-        showAlert('You saved your personnal settings with success !', "alert-success")
-        $('#modalSetting').modal('hide');
-    }).fail(function (data, textStatus, xhr) {
-        hideAlert();
-        showAlert('Request failed! Please re-try.', "alert-danger")
     });
 }
 
@@ -144,7 +110,6 @@ function sortLeaderboard(n) {
     }
 }
 
-
 $(document).ready(function () {
     $("#search-leaderboard").on("keyup", function () {
         var values = $(this).val().toLowerCase().split(' ');
@@ -158,19 +123,3 @@ $(document).ready(function () {
         });
     });
 });
-
-function showAlert(msg, level) {
-    $("#alert-msg").text(msg);
-    $(".alert").addClass(level)
-    $(".alert").removeClass('out');
-    $(".alert").addClass('in');
-    $("#close").fadeIn();
-}
-
-function hideAlert() {
-    $(".alert").removeClass('in');
-    $(".alert").removeClass('alert-success');
-    $(".alert").removeClass('alert-warning');
-    $(".alert").addClass('out');
-    $("#close").fadeOut();
-}

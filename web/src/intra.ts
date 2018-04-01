@@ -2,6 +2,7 @@ import Promise = require('promise');
 import https = require('https');
 import zlib = require('zlib');
 import vars = require('../vars');
+import { setPreferences } from './account';
 
 var con = vars.con;
 
@@ -90,21 +91,27 @@ function setData(id, data) {
 }
 
 function fillDb(email?: string): void {
-    let queryString = "SELECT id, autologin FROM user";
+    let queryString = "SELECT id, email, autologin FROM user";
     if (email)
         queryString += " WHERE email = ?";
     con.query(queryString, [email], (err, result) => {
         if (err) throw err;
-        result.forEach(row => {
-            if (row.autologin)
-                getData(row.autologin, (data) => {
-                    setData(row.id, data);
-                });
-        });
+        for (let i = 0; i < result.length; ++i) {
+            setTimeout(() => {
+                let row = result[i]
+                if (row.autologin)
+                    getData(row.autologin, (data) => {
+                        if (data instanceof Error)
+                            setPreferences(row.email, undefined, {}, () => { });
+                        else
+                            setData(row.id, data);
+                    });
+            }, i * 60 * 1000);
+        }
     });
 };
 
-function getLoginWithAutologin(autologin: string, callback: (login: string | Error) => void) {
+function getLoginWithAutologin(autologin: string, callback: (error: Error, login?: string) => void) {
     let req = https.get(autologin, (res) => {
         if (!("set-cookie" in res.headers))
             return callback(Error("could not get cookie"));
@@ -122,7 +129,7 @@ function getLoginWithAutologin(autologin: string, callback: (login: string | Err
             res.on("data", (d) => { rawData += d; });
             res.on("end", (d) => {
                 let data = JSON.parse(rawData);
-                return callback(data.login);
+                return callback(undefined, data.login);
             });
         });
         req.on("error", (err) => {

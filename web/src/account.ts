@@ -76,7 +76,6 @@ function register(email: string, password: string, callback: (error?: Error) => 
             let queryString = "INSERT INTO user (email, password) VALUES (?, ?)";
             con.query(queryString, [email, hashedPassword], (err, result) => {
                 if (err) return callback(err);
-                fillDb(email);
                 return callback();
             });
         })
@@ -96,25 +95,30 @@ function newPassword(email: string, newPassword: string, callback: (error: Error
     });
 }
 
-function autologin(email: string, callback: (error: Error, autologin?) => any): void {
+function hasAutoLogin(email: string, callback: (error: Error, autologin?: boolean) => any): void {
     let queryString = "SELECT autologin FROM user WHERE email = ?";
-    con.query(queryString, [email], (err, result_user) => {
+    con.query(queryString, [email], (err, res) => {
         if (err) return callback(err);
-        if (result_user.length == 0)
+        if (res.length == 0)
             return callback(Error("user not found"));
-        if (result_user[0].autologin == "")
-            return callback(undefined, 0);
-        return callback(undefined, 1);
+        if (!res[0].autologin || res[0].autologin == "")
+            return callback(undefined, false);
+        return callback(undefined, true);
     });
 }
 
-function newautologin(email: string, autologin: string, gpa: number, credit: number, log: number, marks: number, moduleGrade: number, callback: (error: Error) => any): void {
+function setPreferences(email: string, autologin: string, show: { [key: string]: boolean }, callback: (error?: Error) => any): void {
+    let p = (val) => (val && val != "false") ? 1 : 0;
     let queryString = "UPDATE user SET autologin = ?, show_gpa = ?, show_credit = ?, show_log = ?, show_mark = ?, show_rank = ? WHERE email = ?";
-    con.query(queryString, [autologin, gpa, credit, log, marks, moduleGrade, email], (err, result_user) => {
+    con.query(queryString, [
+        autologin, p(show.gpa), p(show.credit), p(show.log),
+        p(show.mark), p(show.rank), email,
+    ], (err, res) => {
         if (err) return callback(err);
-        if (result_user.length == 0)
+        if (res.length == 0)
             return callback(Error("user not found"));
-        return callback(undefined);
+        fillDb(email);
+        return callback();
     });
 }
 
@@ -200,4 +204,4 @@ function getAllUsers(token: string, callback: (error: Error, user?: Array<User>)
     });
 };
 
-export { register, login, getUser, getUserWithEmail, getAllUsers, newPassword, autologin, newautologin }
+export { register, login, getUser, getUserWithEmail, getAllUsers, newPassword, hasAutoLogin, setPreferences }
