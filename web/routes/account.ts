@@ -7,7 +7,7 @@ import {
     newPassword, hasAutoLogin, setPreferences,
 } from '../src/account';
 import { getLoginWithAutologin, fillDb } from '../src/intra'
-import { con } from '../vars';
+import { con, disableRegistrations } from '../vars';
 import { error } from 'util';
 
 router.post('/api/login', (req, res) => {
@@ -98,6 +98,8 @@ router.post('/api/register', (req, res) => {
     let reg = req.body.email.match(/[a-z]+\.[a-z]+@epitech.eu/i)
     if (!reg || reg[0] != req.body.email)
         res.status(403).send({ warning: "Invalid email" });
+    else if (disableRegistrations)
+        res.status(403).send({ error: "Registrations are disabled!" });
     else
         register(req.body.email, req.body.pass, (error?) => {
             if (error)

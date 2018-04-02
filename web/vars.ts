@@ -1,7 +1,8 @@
 import mysql = require('mysql');
 
-let secretToken: string = "ouibite"
-let secretCookie: string = "biteoui"
+let disableRegistrations: boolean = (process.env.DISABLE_REGISTRATIONS != undefined);
+let secretToken: string = "ouibite";
+let secretCookie: string = "biteoui";
 let hostname: string = 'localhost';
 let hostSQL: string = "104.155.43.170";
 let port: number = 3000;
@@ -16,4 +17,4 @@ function createConnection() {
     });
 }
 
-export { hostname, hostSQL, port, con, secretToken, secretCookie, createConnection };
+export { disableRegistrations, hostname, hostSQL, port, con, secretToken, secretCookie, createConnection };
