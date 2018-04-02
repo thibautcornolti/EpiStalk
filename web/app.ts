@@ -35,6 +35,7 @@ import account_route = require('./routes/account');
 import tasks = require('./src/tasks');
 import logger = require('./logger');
 
+tasks();
 var app = express();
 
 declare var __dirname

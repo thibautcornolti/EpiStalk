@@ -88,6 +88,7 @@ function buildRankview(all) {
             $("#rank-table-data").find('tbody').append(tab);
         }
     alignCellsSize("rank");
+    sortView("rank-table-data", 0);
 }
 
 function buildMarkview(all) {
@@ -128,6 +129,7 @@ function buildMarkview(all) {
         $('[data-toggle="tooltip"]').tooltip();
     });
     alignCellsSize("mark");
+    sortView("mark-table-data", 0);
 }
 
 function sortView(tableid, n) {
@@ -136,7 +138,7 @@ function sortView(tableid, n) {
     var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
     table = document.getElementById(tableid);
     switching = true;
-    dir = "asc";
+    dir = "desc";
     while (switching) {
         switching = false;
         rows = table.getElementsByTagName("TR");
@@ -171,8 +173,8 @@ function sortView(tableid, n) {
             switching = true;
             switchcount++;
         } else {
-            if (switchcount == 0 && dir == "asc") {
-                dir = "desc";
+            if (switchcount == 0 && dir == "desc") {
+                dir = "asc";
                 switching = true;
             }
         }

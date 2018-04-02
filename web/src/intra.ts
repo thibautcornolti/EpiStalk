@@ -2,6 +2,7 @@ import Promise = require('promise');
 import https = require('https');
 import zlib = require('zlib');
 import vars = require('../vars');
+import logger = require('../logger');
 import { setPreferences } from './account';
 
 var con = vars.con;
@@ -72,7 +73,7 @@ function getData(autologin: string, callback: (data: { [key: string]: any } | Er
     });
 }
 
-function setData(id, data) {
+function setData(id, data, callback) {
     let queryString = "UPDATE user SET city = ?, promo = ?, gpa = ?, rank = ?, mark = ?, credit = ?, current_week_log = ? WHERE id = ?";
     let gpa = 0.0;
     for (let i = 0; i < data.gpa.length; ++i) {
@@ -87,6 +88,7 @@ function setData(id, data) {
     let mark = data.mark;
     con.query(queryString, [city, promo, gpa, rank, mark, credit, current_week_log, id], (err, result) => {
         if (err) throw err;
+        callback();
     });
 }
 
@@ -94,17 +96,22 @@ function fillDb(email?: string): void {
     let queryString = "SELECT id, email, autologin FROM user";
     if (email)
         queryString += " WHERE email = ?";
+    logger.info("(intra) Starting to fill the database");
     con.query(queryString, [email], (err, result) => {
         if (err) throw err;
         for (let i = 0; i < result.length; ++i) {
+            logger.info("(intra) Planned to fill " + result[i].email + " in " + i * 60 * 1000 + " seconds");
             setTimeout(() => {
+                logger.info("(intra) Filling " + result[i].email);
                 let row = result[i]
                 if (row.autologin)
                     getData(row.autologin, (data) => {
                         if (data instanceof Error)
                             setPreferences(row.email, undefined, {}, () => { });
                         else
-                            setData(row.id, data);
+                            setData(row.id, data, () => {
+                                logger.info("(intra) Filled " + result[i].email);
+                            });
                     });
             }, i * 60 * 1000);
         }
