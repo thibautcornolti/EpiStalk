@@ -1,5 +1,5 @@
-let user;
-let puser;
+var user;
+var puser;
 
 $.urlParam = function (name) {
     let results = new RegExp('[\?&]' + name + '=([^&#]*)')

@@ -1,12 +1,7 @@
-let user;
-let users;
+var user;
 
 $.get("/api/user", function (data) {
     user = data.user;
-    $.get("/api/users", function (data) {
-        users = data.users;
-        main();
-    })
 })
 
 $('#close').on('click', hideAlert);

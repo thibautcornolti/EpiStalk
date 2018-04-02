@@ -1,5 +1,5 @@
-let user;
-let users;
+var user;
+var users;
 
 $(document).ready(function () {
     $.get("/api/user", function (data) {

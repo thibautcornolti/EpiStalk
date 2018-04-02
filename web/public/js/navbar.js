@@ -5,5 +5,8 @@ $(document).ready(function () {
             $("#nav-home-button").addClass("active");
         else
             $("#nav-home-link").attr("href", "/home");
+        $(document).ready(function () {
+            setUserFields();
+        });
     });
 });
