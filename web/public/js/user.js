@@ -235,7 +235,6 @@ function setPuserFields() {
         $(".get-upper-puser").text(name);
     }
     let refs = [["promo", ""], ["city", ""], ["gpa", "GPA"], ["current_week_log", "log time"], ["credit", "credits"]];
-    console.log(user)
     for (let i = 0; i < refs.length; ++i)
         if (puser[refs[i][0]])
             $(".get-puser-" + refs[i][0]).text(puser[refs[i][0]]);
