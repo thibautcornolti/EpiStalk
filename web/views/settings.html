@@ -3,8 +3,8 @@
 
 <head>
     <title>EpiStalk</title>
-    <link rel="stylesheet" type="text/css" href="/public/css/setting.css"/>
-    <link rel="stylesheet" type="text/css" href="/public/css/common.css"/>
+    <link rel="stylesheet" type="text/css" href="/public/css/setting.css" />
+    <link rel="stylesheet" type="text/css" href="/public/css/common.css" />
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -15,20 +15,71 @@
 </head>
 
 <body class="noselect">
-    <form style="width:30%; margin: 0 auto;">
-        <div class="alert fade" id="bsalert">
-            <a href="#" id="close" class="close" aria-label="close">&times;</a>
-            <strong id=alert-msg>alert-msg</strong>
+    <div style="width:30%; margin: 2% auto;">
+        <div style="margin-top: 10%;">
+            <h2 class="text-center">Sharing preferences</h2>
+            <br>
+            <div>
+                <div class="checkbox">
+                    <span id="spinner-gpa-settings" class="glyphicon glyphicon-refresh glyphicon-refresh-animate" style="margin-right: 3%"></span>
+                    <label>
+                        <input id="checkbox-gpa-settings" type="checkbox">Would you share your
+                        <b>GPA</b> and see others ?
+                    </label>
+                    <br><small id="small-gpa-settings" style='color: tomato; margin-bottom: 2%;'></small><br>
+                </div>
+                <div class="checkbox">
+                    <span id="spinner-credit-settings" class="glyphicon glyphicon-refresh glyphicon-refresh-animate" style="margin-right: 3%"></span>
+                    <label>
+                        <input id="checkbox-credit-settings" type="checkbox">Would you share your
+                        <b>credits</b> and see others ?
+                    </label>
+                    <br><small id="small-credit-settings" style='color: tomato;'></small><br>
+                </div>
+                <div class="checkbox">
+                    <span id="spinner-log-settings" class="glyphicon glyphicon-refresh glyphicon-refresh-animate" style="margin-right: 3%"></span>
+                    <label>
+                        <input id="checkbox-log-settings" type="checkbox"> Would you share your
+                        <b>log time</b> and see others ?
+                    </label>
+                    <br><small id="small-log-settings" style='color: tomato;'></small><br>
+                </div>
+                <div class="checkbox">
+                    <span id="spinner-mark-settings" class="glyphicon glyphicon-refresh glyphicon-refresh-animate" style="margin-right: 3%"></span>
+                    <label>
+                        <input id="checkbox-mark-settings" type="checkbox">Would you share your
+                        <b>marks</b> and see others ?
+                    </label>
+                    <br><small id="small-mark-settings" style='color: tomato;'></small><br>
+                </div>
+                <div class="checkbox">
+                    <span id="spinner-rank-settings" class="glyphicon glyphicon-refresh glyphicon-refresh-animate" style="margin-right: 3%"></span>
+                    <label>
+                        <input id="checkbox-rank-settings" type="checkbox">Would you share your
+                        <b>ranks</b> and see others ?
+                    </label>
+                    <br><small id="small-rank-settings" style='color: tomato;'></small><br>
+                </div>
+                <p class="text-muted">You can only change your preferences once a day!</p>
+            </div>
         </div>
-        <p class="text-center">MY PROFIL</p>
-        <div class="form-group">
-            <input type="text" class="form-control" id="password" placeholder="Password">
+        <div style="margin-top: 10%;">
+            <h2 class="text-center">Settings</h2>
+            <form style="width:60%; margin: 0 auto;">
+                <div class="alert fade" id="bsalert">
+                    <a href="#" id="close" class="close" aria-label="close">&times;</a>
+                    <strong id=alert-msg>alert-msg</strong>
+                </div>
+                <div class="form-group">
+                    <input type="text" class="form-control" id="password" placeholder="Password">
+                </div>
+                <div class="form-group">
+                    <input type="text" class="form-control" id="passwordConfirm" placeholder="Password confirm">
+                </div>
+                <button type="button" id='change'>Save</button>
+            </form>
         </div>
-        <div class="form-group">
-            <input type="text" class="form-control" id="passwordConfirm" placeholder="Password confirm">
-        </div>
-        <button type="button" id='change'>Save</button>
-    </form>
+    </div>
 </body>
 
 </html>

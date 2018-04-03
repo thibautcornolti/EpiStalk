@@ -122,6 +122,29 @@ function setPreferences(email: string, autologin: string, show: { [key: string]:
     });
 }
 
+function getLastChangedPreference(email: string, preferenceName: string, callback: (error: Error, lastChanged?: VarDate) => any) {
+    let queryString = "SELECT " + preferenceName + " FROM user WHERE email = ?";
+    con.query(queryString, [email], (err, res) => {
+        if (err) return callback(err);
+        if (res.length == 0)
+            return callback(Error("user not found"));
+        return callback(undefined, res[0][preferenceName]);
+    });
+}
+
+function setPreference(email: string, preference: { [key: string]: any }, callback: (error?: Error) => any): void {
+    let p = (val) => (val && val != "false") ? 1 : 0;
+    let queryString = "UPDATE user SET " + preference.name + " = ?, last_changed_"+preference.name.slice(5)+" = NOW() WHERE email = ?";
+    con.query(queryString, [
+        p(preference.value), email,
+    ], (err, res) => {
+        if (err) return callback(err);
+        if (res.length == 0)
+            return callback(Error("user not found"));
+        return callback();
+    });
+}
+
 function login(email: string, password: string, expiresIn: string, callback: (error: Error, token?) => any): void {
     let queryString = "SELECT id, password FROM user WHERE email = ?";
     con.query(queryString, [email], (err, result_user) => {
@@ -204,4 +227,8 @@ function getAllUsers(token: string, callback: (error: Error, user?: Array<User>)
     });
 };
 
-export { register, login, getUser, getUserWithEmail, getAllUsers, newPassword, hasAutoLogin, setPreferences }
+export {
+    register, login, getUser, getUserWithEmail, getAllUsers,
+    newPassword, hasAutoLogin, setPreferences, setPreference,
+    getLastChangedPreference,
+}

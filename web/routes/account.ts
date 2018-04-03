@@ -4,7 +4,8 @@ var router = express.Router();
 import { withLog, withLogin, withAPILogin } from '../src/middleware';
 import {
     login, register, getUser, getAllUsers, getUserWithEmail,
-    newPassword, hasAutoLogin, setPreferences,
+    newPassword, hasAutoLogin, setPreferences, setPreference,
+    getLastChangedPreference,
 } from '../src/account';
 import { getLoginWithAutologin, fillDb } from '../src/intra'
 import { con, disableRegistrations } from '../vars';
@@ -152,6 +153,26 @@ router.post('/api/preferences', withAPILogin, (req, res) => {
                         res.status(200).send({ message: "You successfully saved your preferences!" });
                 });
         });
+});
+
+router.post('/api/preference', withAPILogin, (req, res) => {
+    if (!req.body.name || !req.body.value)
+        return res.status(403).send({ error: "An error was occured. Please try again." });
+    let reg = req.body.name.match(/show_(gpa|credit|log|mark|rank)/i);
+    if (!reg || reg.index)
+        return res.status(403).send({ error: "An error was occured. Please try again." });
+    getLastChangedPreference(req.user.email, "last_changed_" + req.body.name.slice(5), (error, date?) => {
+        console.log(new Date().getTime() - new Date(date).getTime())
+        if (new Date().getTime() - new Date(date).getTime() < 1 * 24 * 60 * 60 * 1000 && req.body.value == "false")
+            res.status(403).send({ error: "You already changed your preferences in the last 24h!" });
+        else
+            setPreference(req.user.email, { name: req.body.name, value: req.body.value }, (error?) => {
+                if (error)
+                    res.status(403).send({ error: "An error was occured. Please try again." });
+                else
+                    res.status(200).send({ message: "You successfully saved your preferences!" });
+            });
+    });
 });
 
 router.get('/register', (req, res) => {
