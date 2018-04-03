@@ -27,6 +27,7 @@ function hideAlert() {
     $(".alert").removeClass('in');
     $(".alert").removeClass('alert-success');
     $(".alert").removeClass('alert-warning');
+    $(".alert").removeClass('alert-danger');
     $(".alert").addClass('out');
     $("#close").fadeOut();
 }
@@ -96,9 +97,9 @@ function changePassword() {
     let passwordConfirm = $("#passwordConfirm").val();
     if (password == undefined || password == "" ||
         passwordConfirm == undefined || passwordConfirm == "")
-        showAlert("Field empty", "alert-warning");
+        showAlert("Empty field", "alert-warning");
     else if (password != passwordConfirm) {
-        showAlert("Password are not the same", "alert-danger");
+        showAlert("Password fields do not match", "alert-danger");
     }
     else
         $.post("/api/password", { passwordConfirm }, function (data) {

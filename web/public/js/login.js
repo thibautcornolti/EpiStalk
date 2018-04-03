@@ -30,6 +30,7 @@ function hideAlert() {
     $(".alert").removeClass('in');
     $(".alert").removeClass('alert-success');
     $(".alert").removeClass('alert-warning');
+    $(".alert").removeClass('alert-danger');
     $(".alert").addClass('out');
     $("#close").fadeOut();
 }

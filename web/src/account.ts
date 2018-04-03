@@ -219,7 +219,8 @@ function getAllUsers(token: string, callback: (error: Error, user?: Array<User>)
                     let current_week_log = (result_user[i].show_log && user.current_week_log) ? result_user[i].current_week_log : undefined;
                     let show_rank = result_user[0].show_rank;
                     let show_mark = result_user[0].show_mark;
-                    users.push(new User(email, city, promo, gpa, credit, current_week_log, show_rank, show_mark))
+                    if (city || promo)
+                        users.push(new User(email, city, promo, gpa, credit, current_week_log, show_rank, show_mark))
                 }
                 return callback(undefined, users);
             });
