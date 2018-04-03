@@ -12,8 +12,8 @@ function createConnection() {
     con = mysql.createConnection({
         host: hostSQL,
         user: "thibaut",
-        password: "thibaut123",
-        database: "epislack-test"
+        password: "9a54a1b8b389c753dda13f126c856425",
+        database: "epistalk"
     });
 }
 
