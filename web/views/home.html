@@ -19,7 +19,7 @@
         <input type="text" class="form-control" id="search-leaderboard" placeholder="STG 2021 Thi..." title="Type in a name">
         <br>
         <div style="margin-right:10px">
-            <table id="leaderboard-header" class="table table-striped text-center" style="margin-bottom: 0px;">
+            <table id="leaderboard" class="table table-striped text-center" style="margin-bottom: 0px;">
                 <thead>
                     <tr class="header-leaderboard">
                         <th class="text-left" scope="col">#</th>
@@ -32,10 +32,6 @@
                         <th class="text-center" scope="col" onclick="buildSortedLeaderboardBy('gpa')">GPA</th>
                     </tr>
                 </thead>
-            </table>
-        </div>
-        <div style="height:700px; overflow-y:auto;">
-            <table id="leaderboard-data" class="table table-striped text-center">
                 <tbody>
                     <!-- HERE GOES THE RESPONSIVE TAB FROM HOME.JS -->
                 </tbody>
@@ -45,7 +41,7 @@
     <div class="text-center">
         <h1 class="spinner-leaderboard glyphicon glyphicon-refresh glyphicon-refresh-animate"></h1>
     </div>
-    </table>
+    <div style="margin-bottom: 5%;"></div>
 </body>
 
 </html>

@@ -13,7 +13,7 @@ $(document).ready(function () {
             }
             $(".spinner-leaderboard").remove();
             buildSortedLeaderboardBy("gpa");
-            $("#leaderboard-data tr").on("click", function () {
+            $("#leaderboard tr").on("click", function () {
                 if ($(this).hasClass("user-leaderboard"))
                     $(location).attr("href", "/user?login=" + $(this).attr("login"))
             });
@@ -31,7 +31,7 @@ function setUserFields() {
 }
 
 function clearLeaderboard() {
-    $("#leaderboard-data > tbody").html("");
+    $("#leaderboard > tbody").html("");
 }
 
 function appendRow(n, newUser) {
@@ -56,7 +56,7 @@ function appendRow(n, newUser) {
         '<td>' + newUser.promo + '</td>' +
         log + credit + gpa +
         '</tr>'
-    $("#leaderboard-data").find('tbody').append(tab);
+    $("#leaderboard").find('tbody').append(tab);
     $(document).ready(function () {
         $('[data-toggle="tooltip"]').tooltip();
     });
@@ -111,24 +111,6 @@ function buildSortedLeaderboard(term, sorter, reverse) {
     for (let i = 0; i < users.length; ++i)
         if (!users[i][term])
             appendRowIfFilter("?", users[i]);
-    alignCellsSize();
-}
-
-function alignCellsSize() {
-    $(document).ready(() => {
-        let tdHeader = document.getElementById("leaderboard-header").rows[0].cells;
-        let tdDatas = document.getElementById("leaderboard-data").rows;
-        if (!tdDatas.length)
-            return;
-        let tdData = tdDatas[0].cells;
-        for (let i = 0; i < tdDatas.length; i++)
-            if (tdDatas[i].style.display.indexOf("none") < 0) {
-                tdData = tdDatas[i].cells;
-                break;
-            }
-        for (let i = 0; i < tdData.length; i++)
-            tdHeader[i].style.width = tdData[i].offsetWidth + 'px';
-    });
 }
 
 $(document).ready(function () {
