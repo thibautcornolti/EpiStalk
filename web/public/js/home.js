@@ -13,13 +13,17 @@ $(document).ready(function () {
             }
             $(".spinner-leaderboard").remove();
             buildSortedLeaderboardBy("gpa");
-            $("#leaderboard tr").on("click", function () {
-                if ($(this).hasClass("user-leaderboard"))
-                    $(location).attr("href", "/user?login=" + $(this).attr("login"))
-            });
         })
     })
 });
+
+function enableLink()
+{
+    $("#leaderboard tr").on("click", function () {
+        if ($(this).hasClass("user-leaderboard"))
+            $(location).attr("href", "/user?login=" + $(this).attr("login"))
+    });
+}
 
 /* Replace all fields with the "get-upper-user" attribute with the user name. */
 function setUserFields() {
@@ -111,6 +115,7 @@ function buildSortedLeaderboard(term, sorter, reverse) {
     for (let i = 0; i < users.length; ++i)
         if (!users[i][term])
             appendRowIfFilter("?", users[i]);
+    enableLink();
 }
 
 $(document).ready(function () {
