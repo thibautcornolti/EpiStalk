@@ -9,6 +9,7 @@ $(document).ready(function () {
             users = data.users;
             buildLeaderboard();
 
+
             $("#leaderboard-data tr").on("click", function () {
                 if ($(this).hasClass("user-leaderboard"))
                     $(location).attr("href", "/user?login=" + $(this).attr("login"))
@@ -52,7 +53,7 @@ function buildLeaderboard() {
         let log = buildCell(i, "current_week_log", "log time", false);
         let lastName = users[i].email.toUpperCase().split('@')[0].split('.')[1];
         let firstName = users[i].email.split('.')[0].toUpperCase();
-        let tab = '<tr login="' + users[i].email + '" class="center user-leaderboard">' +
+        let tab = '<tr data-html="true" title="<img src=\'https://cdn.local.epitech.eu/userprofil/profilview/'+users[i].email.split("@")[0]+'.png\'>" data-toggle="tooltip" login="' + users[i].email + '" class="center user-leaderboard">' +
             '<th class="center" scope="row">' + (i + 1) + '</th>' +
             '<td>' + firstName + '</td>' +
             '<td>' + lastName + '</td>' +
