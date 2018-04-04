@@ -1,3 +1,3 @@
-npm install
+./update.sh
 tsc -w&
 nodemon .
