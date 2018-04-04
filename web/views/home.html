@@ -23,13 +23,13 @@
                 <thead>
                     <tr class="header-leaderboard">
                         <th class="text-left" scope="col">#</th>
-                        <th class="text-center" scope="col" onclick="sortLeaderboard(0)">First name</th>
-                        <th class="text-center" scope="col" onclick="sortLeaderboard(1)">Last name</th>
-                        <th class="text-center" scope="col" onclick="sortLeaderboard(2)">City</th>
-                        <th class="text-center" scope="col" onclick="sortLeaderboard(3)">Promo</th>
-                        <th class="text-center" scope="col" onclick="sortLeaderboard(4)">Log</th>
-                        <th class="text-center" scope="col" onclick="sortLeaderboard(5)">Credits</th>
-                        <th class="text-center" scope="col" onclick="sortLeaderboard(6)">GPA</th>
+                        <th class="text-center" scope="col" onclick="buildSortedLeaderboardBy('firstname')">First name</th>
+                        <th class="text-center" scope="col" onclick="buildSortedLeaderboardBy('lastname')">Last name</th>
+                        <th class="text-center" scope="col" onclick="buildSortedLeaderboardBy('city')">City</th>
+                        <th class="text-center" scope="col" onclick="buildSortedLeaderboardBy('promo')">Promo</th>
+                        <th class="text-center" scope="col" onclick="buildSortedLeaderboardBy('current_week_log')">Log</th>
+                        <th class="text-center" scope="col" onclick="buildSortedLeaderboardBy('credit')">Credits</th>
+                        <th class="text-center" scope="col" onclick="buildSortedLeaderboardBy('gpa')">GPA</th>
                     </tr>
                 </thead>
             </table>

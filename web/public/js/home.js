@@ -7,9 +7,12 @@ $(document).ready(function () {
         setUserFields();
         $.get("/api/users", function (data) {
             users = data.users;
-            buildLeaderboard();
-
-
+            for (let i = 0; i < users.length; ++i) {
+                users[i].lastname = users[i].email.toUpperCase().split('@')[0].split('.')[1];
+                users[i].firstname = users[i].email.split('.')[0].toUpperCase();
+            }
+            $(".spinner-leaderboard").remove();
+            buildSortedLeaderboardBy("gpa");
             $("#leaderboard-data tr").on("click", function () {
                 if ($(this).hasClass("user-leaderboard"))
                     $(location).attr("href", "/user?login=" + $(this).attr("login"))
@@ -27,104 +30,74 @@ function setUserFields() {
         $(".get-upper-user").text("NaN");
 }
 
-/* Build the responsive table from /api/users where we get all the users. */
-function buildLeaderboard() {
-    $(".spinner-leaderboard").remove();
-    function buildCell(i, key, endMsg, plurial) {
+function clearLeaderboard() {
+    $("#leaderboard-data > tbody").html("");
+}
+
+function appendRow(n, newUser) {
+    function buildCell(key, endMsg, plurial) {
         be = (plurial) ? "are" : "is";
         your = (plurial) ? "yours" : "your";
         if (!user[key])
             return '<td><div data-toggle="tooltip" data-placement="top" title="The ' + endMsg + ' ' + be + ' hidden until you share ' + your + '"><a href="/settings">?</a></div></td>';
-        else if (!users[i][key])
+        else if (!newUser[key])
             return '<td><div data-toggle="tooltip" data-placement="top" title="This user has hidden his ' + endMsg + '">?</div></td>';
         else
-            return '<td>' + users[i][key] + '</td>';
+            return '<td>' + newUser[key] + '</td>';
     }
-    users.sort(function (a, b) {
-        if (!a.gpa)
-            return true;
-        else if (!b.gpa)
-            return false;
-        return a.gpa < b.gpa;
-    });
-    for (let i = 0; i < users.length; i++) {
-        let credit = buildCell(i, "credit", "credits", true);
-        let gpa = buildCell(i, "gpa", "GPA", false);
-        let log = buildCell(i, "current_week_log", "log time", false);
-        let lastName = users[i].email.toUpperCase().split('@')[0].split('.')[1];
-        let firstName = users[i].email.split('.')[0].toUpperCase();
-        let tab = '<tr data-html="true" title="<img src=\'https://cdn.local.epitech.eu/userprofil/profilview/'+users[i].email.split("@")[0]+'.png\'>" data-toggle="tooltip" login="' + users[i].email + '" class="center user-leaderboard">' +
-            '<th class="center" scope="row">' + (i + 1) + '</th>' +
-            '<td>' + firstName + '</td>' +
-            '<td>' + lastName + '</td>' +
-            '<td>' + users[i].city + '</td>' +
-            '<td>' + users[i].promo + '</td>' +
-            log + credit + gpa +
-            '</tr>'
-        $("#leaderboard-data").find('tbody').append(tab);
-    }
+    let credit = buildCell("credit", "credits", true);
+    let gpa = buildCell("gpa", "GPA", false);
+    let log = buildCell("current_week_log", "log time", false);
+    let tab = '<tr data-html="true" title="<img src=\'https://cdn.local.epitech.eu/userprofil/profilview/' + newUser.email.split("@")[0] + '.png\'>" data-toggle="tooltip" login="' + newUser.email + '" class="center user-leaderboard">' +
+        '<th class="center" scope="row">' + n + '</th>' +
+        '<td>' + newUser.firstname + '</td>' +
+        '<td>' + newUser.lastname + '</td>' +
+        '<td>' + newUser.city + '</td>' +
+        '<td>' + newUser.promo + '</td>' +
+        log + credit + gpa +
+        '</tr>'
+    $("#leaderboard-data").find('tbody').append(tab);
     $(document).ready(function () {
         $('[data-toggle="tooltip"]').tooltip();
     });
-    alignCellsSize();
-    sortLeaderboard(6);
 }
 
-function sortLeaderboard(n) {
-    function toConditionnalNumber(num) {
-        console.log(num)
-        if ((n == 6 || n == 5 || n == 4) && num &&
-            num.indexOf("\000") < 0 &&
-            num.indexOf("\255") < 0)
-            return parseFloat(num);
-        else if ((n == 6 || n == 5 || n == 4) && num &&
-            num.indexOf("\000") > -1)
-            return parseFloat(-1);
-        else if ((n == 6 || n == 5 || n == 4) && num &&
-            num.indexOf("\255") > -1)
-            return parseFloat(1000);
-        return num;
+var lastTerm;
+var reverse;
+function buildSortedLeaderboardBy(term) {
+    if (reverse === undefined)
+        reverse = false;
+    if (lastTerm == term)
+        reverse = !reverse;
+    lastTerm = term;
+    let refs = {
+        "gpa": function (a, b) { return parseFloat(b.gpa) - parseFloat(a.gpa); },
+        "credit": function (a, b) { return parseFloat(b.credit) - parseFloat(a.credit); },
+        "current_week_log": function (a, b) { return parseFloat(b.current_week_log) - parseFloat(a.current_week_log); },
+        "promo": function (a, b) { return parseFloat(b.promo) - parseFloat(a.promo); },
+    };
+    let filter = ((term in refs) ? refs[term] : function (a, b) { return (a[term] > b[term]) ? 1 : ((b[term] > a[term]) ? -1 : 0); });
+    buildSortedLeaderboard(term, filter, reverse)
+}
+
+function buildSortedLeaderboard(term, filter, reverse) {
+    clearLeaderboard();
+    users.sort(filter);
+    if (reverse) {
+        let count = users.length;
+        for (let i = users.length - 1; i >= 0; --i)
+            if (users[i][term])
+                appendRow(count--, users[i]);
+    } else {
+        let count = 1;
+        for (let i = 0; i < users.length; ++i)
+            if (users[i][term])
+                appendRow(count++, users[i]);
     }
-    var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
-    table = document.getElementById("leaderboard-data");
-    switching = true;
-    dir = "desc";
-    while (switching) {
-        switching = false;
-        rows = table.getElementsByTagName("TR");
-        for (i = 0; i < (rows.length - 1); i++) {
-            shouldSwitch = false;
-            x = rows[i].getElementsByTagName("TD")[n].innerHTML.toLowerCase();
-            y = rows[i + 1].getElementsByTagName("TD")[n].innerHTML.toLowerCase();
-            if (x.indexOf("null") > - 1 || x.indexOf("?") > -1)
-                x = (dir == "asc") ? "\255" : "\000";
-            if (y.indexOf("null") > - 1 || y.indexOf("?") > -1)
-                y = (dir == "desc") ? "\000" : "\255";
-            x = toConditionnalNumber(x);
-            y = toConditionnalNumber(y);
-            if (dir == "asc") {
-                if (x > y) {
-                    shouldSwitch = true;
-                    break;
-                }
-            } else if (dir == "desc") {
-                if (x < y) {
-                    shouldSwitch = true;
-                    break;
-                }
-            }
-        }
-        if (shouldSwitch) {
-            rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
-            switching = true;
-            switchcount++;
-        } else {
-            if (switchcount == 0 && dir == "desc") {
-                dir = "asc";
-                switching = true;
-            }
-        }
-    }
+    for (let i = 0; i < users.length; ++i)
+        if (!users[i][term])
+            appendRow("?", users[i]);
+    alignCellsSize();
 }
 
 function alignCellsSize() {
