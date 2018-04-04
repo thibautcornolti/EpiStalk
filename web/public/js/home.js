@@ -69,6 +69,8 @@ function buildSortedLeaderboardBy(term) {
         reverse = false;
     if (lastTerm == term)
         reverse = !reverse;
+    if (term === undefined)
+        term = lastTerm;
     lastTerm = term;
     let refs = {
         "gpa": function (a, b) { return parseFloat(b.gpa) - parseFloat(a.gpa); },
@@ -76,27 +78,39 @@ function buildSortedLeaderboardBy(term) {
         "current_week_log": function (a, b) { return parseFloat(b.current_week_log) - parseFloat(a.current_week_log); },
         "promo": function (a, b) { return parseFloat(b.promo) - parseFloat(a.promo); },
     };
-    let filter = ((term in refs) ? refs[term] : function (a, b) { return (a[term] > b[term]) ? 1 : ((b[term] > a[term]) ? -1 : 0); });
-    buildSortedLeaderboard(term, filter, reverse)
+    let sorter = ((term in refs) ? refs[term] : function (a, b) { return (a[term] > b[term]) ? 1 : ((b[term] > a[term]) ? -1 : 0); });
+    buildSortedLeaderboard(term, sorter, reverse)
 }
 
-function buildSortedLeaderboard(term, filter, reverse) {
+var filter = [];
+function appendRowIfFilter(n, newUser) {
+    let str = "";
+    for (u in newUser)
+        str += newUser[u];
+    str = str.toLowerCase();
+    if (filter.length)
+        for (let i = 0; i < filter.length; ++i)
+            if (str.indexOf(filter[i]) < 0)
+                return ;
+    appendRow(n, newUser);
+}
+
+function buildSortedLeaderboard(term, sorter, reverse) {
     clearLeaderboard();
-    users.sort(filter);
+    users.sort(sorter);
+    let count = 1;
     if (reverse) {
-        let count = users.length;
-        for (let i = users.length - 1; i >= 0; --i)
-            if (users[i][term])
-                appendRow(count--, users[i]);
-    } else {
-        let count = 1;
+        users.reverse();
         for (let i = 0; i < users.length; ++i)
             if (users[i][term])
-                appendRow(count++, users[i]);
+                count++;
     }
     for (let i = 0; i < users.length; ++i)
+        if (users[i][term])
+            appendRowIfFilter((reverse ? count-- : count++), users[i]);
+    for (let i = 0; i < users.length; ++i)
         if (!users[i][term])
-            appendRow("?", users[i]);
+            appendRowIfFilter("?", users[i]);
     alignCellsSize();
 }
 
@@ -104,6 +118,8 @@ function alignCellsSize() {
     $(document).ready(() => {
         let tdHeader = document.getElementById("leaderboard-header").rows[0].cells;
         let tdDatas = document.getElementById("leaderboard-data").rows;
+        if (!tdDatas.length)
+            return;
         let tdData = tdDatas[0].cells;
         for (let i = 0; i < tdDatas.length; i++)
             if (tdDatas[i].style.display.indexOf("none") < 0) {
@@ -117,15 +133,9 @@ function alignCellsSize() {
 
 $(document).ready(function () {
     $("#search-leaderboard").on("keyup", function () {
-        var values = $(this).val().toLowerCase().split(' ');
-        $("#leaderboard-data tr").filter(function () {
-            if (!$(this).hasClass("header-leaderboard")) {
-                let show = true;
-                for (let i = 0; i < values.length; ++i)
-                    show = ($(this).text().toLowerCase().indexOf(values[i]) < 0) ? false : show;
-                $(this).toggle(show);
-            }
-            alignCellsSize();
-        });
+        filter = [];
+        if ($(this).val().length)
+            filter = $(this).val().toLowerCase().split(' ');
+        buildSortedLeaderboardBy();
     });
 });
