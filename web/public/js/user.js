@@ -224,7 +224,7 @@ function setPuserPictures() {
     if (user) {
         let name = puser.email.split("@")[0];
         $(".puser-picture").attr("src", url + name + ".png");
-        if (user.email == "olivier.metzinger@epitech.eu")
+        if (puser.email.indexOf("olivier.metzinger@epitech.eu") == 0)
             $(".puser-picture").attr("src", "https://i.imgur.com/2mX2Y7u.png");
         $(".puser-picture").toggle(true);
     }
