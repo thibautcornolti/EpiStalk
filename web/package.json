@@ -23,6 +23,7 @@
     "mysql": "^2.15.0",
     "path": "^0.12.7",
     "promise": "^8.0.1",
+    "serve-favicon": "^2.5.0",
     "winston": "^2.4.1",
     "winston-daily-rotate-file": "^3.0.1"
   }

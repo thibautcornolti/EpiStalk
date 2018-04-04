@@ -1,4 +1,5 @@
 import express = require('express');
+import favicon = require('serve-favicon')
 import cookieParser = require('cookie-parser')
 import path = require('path');
 import session = require('express-session');
@@ -48,6 +49,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser(secretCookie));
 app.use(withLog);
 
+app.use(favicon(path.join(__dirname, '/public/images/favicon.ico')));
 app.use('/public', express.static(path.join(__dirname, '/public')));
 app.use('/', account_route);
 
