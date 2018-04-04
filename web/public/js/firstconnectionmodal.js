@@ -4,6 +4,7 @@ $(document).ready(function () {
         $.get("/api/autologin", function (data) {
             if (!data.autologin) {
                 $("#modal-preferences").modal('show');
+                window.open("https://intra.epitech.eu/admin/autolog", "popupWindow", "width=1000,height=500,scrollbars=yes");
                 $('#close-preferences').on('click', clickClosePreferences);
                 $("#save-preferences").on("click", clickSavePreferences);
                 $("#close-alert-preferences").on("click", hidePreferencesAlert);

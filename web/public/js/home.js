@@ -66,13 +66,28 @@ function buildLeaderboard() {
         $('[data-toggle="tooltip"]').tooltip();
     });
     alignCellsSize();
+    sortLeaderboard(6);
 }
 
 function sortLeaderboard(n) {
+    function toConditionnalNumber(num) {
+        console.log(num)
+        if ((n == 6 || n == 5 || n == 4) && num &&
+            num.indexOf("\000") < 0 &&
+            num.indexOf("\255") < 0)
+            return parseFloat(num);
+        else if ((n == 6 || n == 5 || n == 4) && num &&
+            num.indexOf("\000") > -1)
+            return parseFloat(-1);
+        else if ((n == 6 || n == 5 || n == 4) && num &&
+            num.indexOf("\255") > -1)
+            return parseFloat(1000);
+        return num;
+    }
     var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
     table = document.getElementById("leaderboard-data");
     switching = true;
-    dir = "asc";
+    dir = "desc";
     while (switching) {
         switching = false;
         rows = table.getElementsByTagName("TR");
@@ -80,10 +95,12 @@ function sortLeaderboard(n) {
             shouldSwitch = false;
             x = rows[i].getElementsByTagName("TD")[n].innerHTML.toLowerCase();
             y = rows[i + 1].getElementsByTagName("TD")[n].innerHTML.toLowerCase();
-            if (x.indexOf("?") > -1)
+            if (x.indexOf("null") > - 1 || x.indexOf("?") > -1)
                 x = (dir == "asc") ? "\255" : "\000";
-            if (y.indexOf("?") > -1)
+            if (y.indexOf("null") > - 1 || y.indexOf("?") > -1)
                 y = (dir == "desc") ? "\000" : "\255";
+            x = toConditionnalNumber(x);
+            y = toConditionnalNumber(y);
             if (dir == "asc") {
                 if (x > y) {
                     shouldSwitch = true;
@@ -101,8 +118,8 @@ function sortLeaderboard(n) {
             switching = true;
             switchcount++;
         } else {
-            if (switchcount == 0 && dir == "asc") {
-                dir = "desc";
+            if (switchcount == 0 && dir == "desc") {
+                dir = "asc";
                 switching = true;
             }
         }
