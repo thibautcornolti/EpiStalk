@@ -224,6 +224,8 @@ function setPuserPictures() {
     if (user) {
         let name = puser.email.split("@")[0];
         $(".puser-picture").attr("src", url + name + ".png");
+        if (user.email == "olivier.metzinger@epitech.eu")
+            $(".puser-picture").attr("src", "https://i.imgur.com/2mX2Y7u.png");
         $(".puser-picture").toggle(true);
     }
 }
@@ -241,7 +243,7 @@ function setPuserFields() {
         else if (puser && user[refs[i][0]])
             $(".get-puser-" + refs[i][0]).html("<span data-toggle='tooltip' data-placement='top' title='This user has hidden his " + refs[i][1] + "'>?</span>");
         else if (puser)
-        $(".get-puser-" + refs[i][0]).html("<span data-toggle='tooltip' data-placement='top' title='Share your " + refs[i][1] + " to see others!'><a href='/settings'>?</a></span>");
+            $(".get-puser-" + refs[i][0]).html("<span data-toggle='tooltip' data-placement='top' title='Share your " + refs[i][1] + " to see others!'><a href='/settings'>?</a></span>");
         else
             $(".get-puser-" + refs[i][0]).text("NaN");
     $(".puser-loading-hide").toggle(false);
