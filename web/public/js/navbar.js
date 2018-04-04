@@ -3,8 +3,6 @@ $(document).ready(function () {
     $("#main-navbar").load("public/html/navbar.html", function () {
         if (window.location.pathname.indexOf("/home") == 0)
             $("#nav-home-button").addClass("active");
-        else
-            $("#nav-home-link").attr("href", "/home");
         $(document).ready(function () {
             setUserFields();
         });

@@ -96,7 +96,7 @@ router.post('/api/register', (req, res) => {
         res.status(403).send({ warning: "Empty field" });
         return;
     }
-    let reg = req.body.email.match(/[a-z-]*\.[a-z-]*@epitech.eu/i)
+    let reg = req.body.email.match(/[a-z-]*[0-9]*\.[a-z-]*@epitech.eu/i)
     if (!reg || reg[0] != req.body.email)
         res.status(403).send({ warning: "Invalid email" });
     else if (disableRegistrations)
