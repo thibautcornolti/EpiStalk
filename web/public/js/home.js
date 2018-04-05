@@ -8,6 +8,13 @@ Array.prototype.remove = function (from, to) {
     return this.push.apply(this, rest);
 };
 
+Object.size = function () {
+    let count = 0;
+    for (i in this)
+        count++;
+    return count;
+};
+
 $(document).ready(function () {
     $.get("/api/user", function (data) {
         user = data.user;
@@ -98,8 +105,18 @@ function buildSortedLeaderboardBy(term) {
     buildSortedLeaderboard(term, sorter, reverse)
 }
 
+function showFilteredMessage() {
+    $("#dropdown-filter-small").text("")
+    for (let i in dropdownFilter) {
+        if (dropdownFilter[i].length) {
+            $("#dropdown-filter-small").text("Filter applied!")
+            return ;
+        }
+    }
+}
+
 var filter = [];
-var dropdownFilter = [];
+var dropdownFilter = {};
 function appendRowIfFilter(n, newUser) {
     let str = "";
     for (u in newUser)
@@ -109,10 +126,20 @@ function appendRowIfFilter(n, newUser) {
         for (let i = 0; i < filter.length; ++i)
             if (str.indexOf(filter[i]) < 0)
                 return;
-    if (dropdownFilter.length) {
-        for (let i = 0; i < dropdownFilter.length; ++i)
-            if (str.indexOf(dropdownFilter[i]) > -1)
-                return appendRow(n, newUser);
+    if (Object.size(dropdownFilter)) {
+        let dropdownFilterMatch = {}
+        for (name in dropdownFilter) {
+            if (dropdownFilter[name].length) {
+                for (let i = 0; i < dropdownFilter[name].length; ++i)
+                    if (str.indexOf(dropdownFilter[name][i]) > -1)
+                        dropdownFilterMatch[name] = 1;
+            } else dropdownFilterMatch[name] = 1;
+        }
+        for (name in dropdownFilter) {
+            if (!dropdownFilterMatch[name])
+                return;
+        }
+        appendRow(n, newUser);
     } else appendRow(n, newUser);
 }
 
@@ -135,16 +162,21 @@ function buildSortedLeaderboard(term, sorter, reverse) {
         if (!users[i][term])
             appendRowIfFilter("?", users[i]);
     enableLink();
+    showFilteredMessage();
 }
 
-function addDropdownFilter(filter) {
-    dropdownFilter.push(filter);
+function addDropdownFilter(name, filter) {
+    if (!dropdownFilter[name])
+        dropdownFilter[name] = [];
+    dropdownFilter[name].push(filter);
 }
 
-function removeDropdownFilter(filter) {
-    for (let i = 0; i < dropdownFilter.length; ++i)
-        if (dropdownFilter[i].indexOf(filter) == 0)
-            dropdownFilter.remove(i);
+function removeDropdownFilter(name, filter) {
+    if (!dropdownFilter[name])
+        dropdownFilter[name] = [];
+    for (let i = 0; i < dropdownFilter[name].length; ++i)
+        if (dropdownFilter[name][i].indexOf(filter) == 0)
+            dropdownFilter[name].remove(i);
 }
 
 function genDropdownFilter(name) {
@@ -158,17 +190,30 @@ function genDropdownFilter(name) {
         rawHtml = rawHtml + "<li><a href='#' vchecked='false' value='" + val[i] + "'>" + val[i] + "</a></li>"
     $("#dropdown-filter-" + name + " > ul").html(rawHtml);
     $(document).ready(function () {
+        let eachRemaining = $("#dropdown-filter-" + name + " > ul > li").nextAll().length
+        $("#dropdown-filter-" + name + " > ul > li").each(function () {
+            let a = $(this).children("a");
+            val = a.attr("value");
+            if (user[name].indexOf(val) == 0) {
+                a.attr("vchecked", "true");
+                a.html("<span class='glyphicon glyphicon-ok' style='margin-right: 10%;'></span>" + val);
+                addDropdownFilter(name, val.toLowerCase());
+            }
+            if (--eachRemaining == 0) {
+                buildSortedLeaderboardBy();
+            }
+        });
         $("#dropdown-filter-" + name + " > ul > li").on("click", function (e) {
             let a = $(this).children("a");
             val = a.attr("value");
             if (a.attr("vchecked").indexOf("true") == 0) {
                 a.attr("vchecked", "false");
                 a.html(val);
-                removeDropdownFilter(val.toLowerCase());
+                removeDropdownFilter(name, val.toLowerCase());
             } else {
                 a.attr("vchecked", "true");
                 a.html("<span class='glyphicon glyphicon-ok' style='margin-right: 10%;'></span>" + val);
-                addDropdownFilter(val.toLowerCase());
+                addDropdownFilter(name, val.toLowerCase());
             }
             buildSortedLeaderboardBy();
             e.stopPropagation();
