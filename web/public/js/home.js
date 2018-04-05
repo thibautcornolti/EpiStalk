@@ -1,6 +1,13 @@
 var user;
 var users;
 
+// Array Remove - By John Resig (MIT Licensed)
+Array.prototype.remove = function (from, to) {
+    var rest = this.slice((to || from) + 1 || this.length);
+    this.length = from < 0 ? this.length + from : from;
+    return this.push.apply(this, rest);
+};
+
 $(document).ready(function () {
     $.get("/api/user", function (data) {
         user = data.user;
@@ -13,12 +20,13 @@ $(document).ready(function () {
             }
             $(".spinner-leaderboard").remove();
             buildSortedLeaderboardBy("gpa");
+            genDropdownFilter("promo");
+            genDropdownFilter("city");
         })
     })
 });
 
-function enableLink()
-{
+function enableLink() {
     $("#leaderboard tr").on("click", function () {
         if ($(this).hasClass("user-leaderboard"))
             $(location).attr("href", "/user?login=" + $(this).attr("login"))
@@ -38,7 +46,11 @@ function clearLeaderboard() {
     $("#leaderboard > tbody").html("");
 }
 
+var countLeaderboard;
+var reverseLeaderboard;
 function appendRow(n, newUser) {
+    if (n === undefined)
+        n = (reverseLeaderboard ? countLeaderboard-- : countLeaderboard++);
     function buildCell(key, endMsg, plurial) {
         be = (plurial) ? "are" : "is";
         your = (plurial) ? "yours" : "your";
@@ -87,6 +99,7 @@ function buildSortedLeaderboardBy(term) {
 }
 
 var filter = [];
+var dropdownFilter = [];
 function appendRowIfFilter(n, newUser) {
     let str = "";
     for (u in newUser)
@@ -95,8 +108,12 @@ function appendRowIfFilter(n, newUser) {
     if (filter.length)
         for (let i = 0; i < filter.length; ++i)
             if (str.indexOf(filter[i]) < 0)
-                return ;
-    appendRow(n, newUser);
+                return;
+    if (dropdownFilter.length) {
+        for (let i = 0; i < dropdownFilter.length; ++i)
+            if (str.indexOf(dropdownFilter[i]) > -1)
+                return appendRow(n, newUser);
+    } else appendRow(n, newUser);
 }
 
 function buildSortedLeaderboard(term, sorter, reverse) {
@@ -109,13 +126,54 @@ function buildSortedLeaderboard(term, sorter, reverse) {
             if (users[i][term])
                 count++;
     }
+    reverseLeaderboard = reverse;
+    countLeaderboard = count;
     for (let i = 0; i < users.length; ++i)
         if (users[i][term])
-            appendRowIfFilter((reverse ? count-- : count++), users[i]);
+            appendRowIfFilter(undefined, users[i]);
     for (let i = 0; i < users.length; ++i)
         if (!users[i][term])
             appendRowIfFilter("?", users[i]);
     enableLink();
+}
+
+function addDropdownFilter(filter) {
+    dropdownFilter.push(filter);
+}
+
+function removeDropdownFilter(filter) {
+    for (let i = 0; i < dropdownFilter.length; ++i)
+        if (dropdownFilter[i].indexOf(filter) == 0)
+            dropdownFilter.remove(i);
+}
+
+function genDropdownFilter(name) {
+    let rawVal = [];
+    for (let i = 0; i < users.length; ++i)
+        rawVal.push(users[i][name])
+    let rawHtml = "";
+    let val = Array.from(new Set(rawVal));
+    val.sort();
+    for (let i = 0; i < val.length; ++i)
+        rawHtml = rawHtml + "<li><a href='#' vchecked='false' value='" + val[i] + "'>" + val[i] + "</a></li>"
+    $("#dropdown-filter-" + name + " > ul").html(rawHtml);
+    $(document).ready(function () {
+        $("#dropdown-filter-" + name + " > ul > li").on("click", function (e) {
+            let a = $(this).children("a");
+            val = a.attr("value");
+            if (a.attr("vchecked").indexOf("true") == 0) {
+                a.attr("vchecked", "false");
+                a.html(val);
+                removeDropdownFilter(val.toLowerCase());
+            } else {
+                a.attr("vchecked", "true");
+                a.html("<span class='glyphicon glyphicon-ok' style='margin-right: 10%;'></span>" + val);
+                addDropdownFilter(val.toLowerCase());
+            }
+            buildSortedLeaderboardBy();
+            e.stopPropagation();
+        });
+    });
 }
 
 $(document).ready(function () {
