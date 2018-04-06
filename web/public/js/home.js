@@ -194,7 +194,7 @@ function genDropdownFilter(name) {
         $("#dropdown-filter-" + name + " > ul > li").each(function () {
             let a = $(this).children("a");
             val = a.attr("value");
-            if (user[name].indexOf(val) == 0) {
+            if (user[name] && user[name].indexOf(val) == 0) {
                 a.attr("vchecked", "true");
                 a.html("<span class='glyphicon glyphicon-ok' style='margin-right: 10%;'></span>" + val);
                 addDropdownFilter(name, val.toLowerCase());
