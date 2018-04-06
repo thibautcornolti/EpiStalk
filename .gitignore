@@ -3,7 +3,8 @@ package-lock.json
 .vscode
 routes/*.js
 src/*.js
-/*.js
+vars.js
+logger.js
+app.js
 *.js.map
 log/
-

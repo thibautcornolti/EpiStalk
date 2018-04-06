@@ -8,69 +8,61 @@ import { setPreferences } from './account';
 var con = vars.con;
 
 function getData(autologin: string, callback: (data: { [key: string]: any } | Error) => void) {
-    let req = https.get(autologin, (res) => {
-        if (!("set-cookie" in res.headers))
-            return callback(Error("could not get cookie"));
-        let cookie = res.headers["set-cookie"];
-        let option = {
-            hostname: "intra.epitech.eu",
-            path: "/user/?format=json",
-            method: "GET",
-            headers: {
-                "cookie": cookie,
-            },
-        };
-        let req = https.request(option, (res) => {
-            let rawData: string = "";
-            res.on("data", (d) => { rawData += d; });
-            res.on("end", (d) => {
-                let data = JSON.parse(rawData);
-                let option = {
-                    hostname: "intra.epitech.eu",
-                    path: "/user/" + data.login + "/notes/?format=json",
-                    method: "GET",
-                    headers: {
-                        "cookie": cookie,
-                    },
-                };
-                let req = https.request(option, (res) => {
-                    let rawData: string = "";
-                    res.on("data", (d) => { rawData += d; });
-                    res.on("end", (d) => {
-                        let jsonData = JSON.parse(rawData);
-                        let pMark = new Promise((resolve, reject) => {
-                            zlib.deflate(new Buffer(JSON.stringify(jsonData.notes)), (err, res) => {
-                                if (err) reject(err);
-                                data.mark = res;
-                                resolve();
-                            });
+    let userUrl = autologin + "/user/?format=json";
+    let req = https.get(userUrl, (res) => {
+        let rawData: string = "";
+        res.on("data", (d) => { rawData += d; });
+        res.on("end", (d) => {
+            let data;
+            try {
+                data = JSON.parse(rawData);
+            } catch (err) {
+                logger.error(err);
+                return callback(err);
+            }
+            let noteUrl = autologin+"/user/"+data.login+"/notes/?format=json";
+            let req = https.get(noteUrl, (res) => {
+                let rawData: string = "";
+                res.on("data", (d) => { rawData += d; });
+                res.on("end", (d) => {
+                    let jsonData;
+                    try {
+                        jsonData = JSON.parse(rawData);
+                    } catch (err) {
+                        logger.error(err);
+                        return callback(err);
+                    }
+                    let pMark = new Promise((resolve, reject) => {
+                        zlib.deflate(new Buffer(JSON.stringify(jsonData.notes)), (err, res) => {
+                            if (err) reject(err);
+                            data.mark = res;
+                            resolve();
                         });
-                        let pRank = new Promise((resolve, reject) => {
-                            zlib.deflate(new Buffer(JSON.stringify(jsonData.modules)), (err, res) => {
-                                if (err) reject(err);
-                                data.rank = res;
-                                resolve();
-                            });
-                        });
-                        Promise.all([pMark, pRank]).then(() => {
-                            return callback(data);
-                        }, (err) => { throw err; });
                     });
+                    let pRank = new Promise((resolve, reject) => {
+                        zlib.deflate(new Buffer(JSON.stringify(jsonData.modules)), (err, res) => {
+                            if (err) reject(err);
+                            data.rank = res;
+                            resolve();
+                        });
+                    });
+                    Promise.all([pMark, pRank]).then(() => {
+                        return callback(data);
+                    }, (err) => { throw err; });
                 });
-                req.on("error", (err) => {
-                    return callback(undefined);
-                });
-                req.end();
             });
+            req.on("error", (err) => {
+                logger.error(err);
+                return callback(err);
+            });
+            req.end();
         });
-        req.on("error", (err) => {
-            return callback(undefined);
-        });
-        req.end();
     });
     req.on("error", (err) => {
-        return callback(undefined);
+        logger.error(err);
+        return callback(err);
     });
+    req.end();
 }
 
 function setData(id, data, callback) {
@@ -100,7 +92,7 @@ function fillDb(email?: string): void {
     con.query(queryString, [email], (err, result) => {
         if (err) throw err;
         for (let i = 0; i < result.length; ++i) {
-            logger.info("(intra) Planned to fill " + result[i].email + " in " + i * 60 * 1000 + " seconds");
+            logger.info("(intra) Planned to fill " + result[i].email + " in " + (i * 60 * 1000) + " seconds");
             setTimeout(() => {
                 logger.info("(intra) Filling " + result[i].email);
                 let row = result[i]
@@ -119,32 +111,23 @@ function fillDb(email?: string): void {
 };
 
 function getLoginWithAutologin(autologin: string, callback: (error: Error, login?: string) => void) {
+    autologin += "/user/?format=json"
     let req = https.get(autologin, (res) => {
-        if (!("set-cookie" in res.headers))
-            return callback(Error("could not get cookie"));
-        let cookie = res.headers["set-cookie"];
-        let option = {
-            hostname: "intra.epitech.eu",
-            path: "/user/?format=json",
-            method: "GET",
-            headers: {
-                "cookie": cookie,
-            },
-        };
-        let req = https.request(option, (res) => {
-            let rawData: string = "";
-            res.on("data", (d) => { rawData += d; });
-            res.on("end", (d) => {
-                let data = JSON.parse(rawData);
-                return callback(undefined, data.login);
-            });
+        let rawData: string = "";
+        res.on("data", (d) => { rawData += d; });
+        res.on("end", (d) => {
+            let data;
+            try {
+                data = JSON.parse(rawData);
+            } catch (err) {
+                logger.error(err);
+                return callback(err);
+            }
+            return callback(undefined, data.login);
         });
-        req.on("error", (err) => {
-            return callback(err);
-        });
-        req.end();
     });
     req.on("error", (err) => {
+        logger.error(err);
         return callback(err);
     });
 };
