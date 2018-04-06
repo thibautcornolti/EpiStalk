@@ -1,4 +1,3 @@
-import Promise = require('promise');
 import https = require('https');
 import zlib = require('zlib');
 import vars = require('../vars');
@@ -84,7 +83,7 @@ function setData(id, data, callback) {
     });
 }
 
-function fillDb(email?: string): void {
+async function fillDb(email?: string) {
     let queryString = "SELECT id, email, autologin FROM user";
     if (email)
         queryString += " WHERE email = ?";
@@ -110,7 +109,7 @@ function fillDb(email?: string): void {
     });
 };
 
-function getLoginWithAutologin(autologin: string, callback: (error: Error, login?: string) => void) {
+async function getLoginWithAutologin(autologin: string, callback: (error: Error, login?: string) => void) {
     autologin += "/user/?format=json"
     let req = https.get(autologin, (res) => {
         let rawData: string = "";

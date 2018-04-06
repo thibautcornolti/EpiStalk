@@ -1,5 +1,4 @@
 import express = require('express');
-import Promise = require('promise');
 var router = express.Router();
 import { withLog, withLogin, withAPILogin } from '../src/middleware';
 import {
@@ -11,7 +10,7 @@ import { getLoginWithAutologin, fillDb } from '../src/intra'
 import { con, disableRegistrations } from '../vars';
 import { error } from 'util';
 
-router.post('/api/login', (req, res) => {
+router.post('/api/login', async (req, res) => {
     if (req.body.email == undefined || req.body.email.length == 0 ||
         req.body.pass == undefined || req.body.pass.length == 0)
         res.status(403).send({ warning: "Empty field" });
@@ -24,7 +23,7 @@ router.post('/api/login', (req, res) => {
         });
 });
 
-router.get('/api/user', withAPILogin, (req, res) => {
+router.get('/api/user', withAPILogin, async (req, res) => {
     if (!req.query.login)
         res.status(200).send({ user: req.user });
     else
@@ -58,7 +57,7 @@ router.get('/api/user', withAPILogin, (req, res) => {
         });
 });
 
-router.get('/api/users', withAPILogin, (req, res) => {
+router.get('/api/users', withAPILogin, async (req, res) => {
     let token = req.cookies.token
     if (!token)
         res.status(403).send({ error: "Token not found" });
@@ -71,7 +70,7 @@ router.get('/api/users', withAPILogin, (req, res) => {
     });
 });
 
-router.get('/login', (req, res) => {
+router.get('/login', async (req, res) => {
     let token = req.cookies.token
     if (!token)
         res.render('login');
@@ -85,12 +84,12 @@ router.get('/login', (req, res) => {
     }
 });
 
-router.get('/logout', (req, res) => {
+router.get('/logout', async (req, res) => {
     res.setHeader("Set-Cookie", "token=;expires=Thu, 01 Jan 1970 00:00:01 GMT");
     res.redirect('/');
 });
 
-router.post('/api/register', (req, res) => {
+router.post('/api/register', async (req, res) => {
     if (req.body.email == undefined || req.body.email.length == 0 ||
         req.body.pass == undefined || req.body.pass.length == 0) {
         res.status(403).send({ warning: "Empty field" });
@@ -110,7 +109,7 @@ router.post('/api/register', (req, res) => {
         });
 });
 
-router.post('/api/password', withAPILogin, (req, res) => {
+router.post('/api/password', withAPILogin, async (req, res) => {
     newPassword(req.user.email, req.body.passwordConfirm, (error?) => {
         if (error)
             res.status(403).send({ error: "An error was occured. Please try again." });
@@ -119,7 +118,7 @@ router.post('/api/password', withAPILogin, (req, res) => {
     });
 });
 
-router.get('/api/autologin', withAPILogin, (req, res) => {
+router.get('/api/autologin', withAPILogin, async (req, res) => {
     hasAutoLogin(req.user.email, (error, has) => {
         if (error)
             res.status(403).send({ error: "An error was occured. Please try again." });
@@ -128,7 +127,7 @@ router.get('/api/autologin', withAPILogin, (req, res) => {
     });
 });
 
-router.post('/api/preferences', withAPILogin, (req, res) => {
+router.post('/api/preferences', withAPILogin, async (req, res) => {
     let show = {
         gpa: req.body.show_gpa,
         credit: req.body.show_credit,
@@ -155,7 +154,7 @@ router.post('/api/preferences', withAPILogin, (req, res) => {
         });
 });
 
-router.post('/api/preference', withAPILogin, (req, res) => {
+router.post('/api/preference', withAPILogin, async (req, res) => {
     if (!req.body.name || !req.body.value)
         return res.status(403).send({ error: "An error was occured. Please try again." });
     let reg = req.body.name.match(/show_(gpa|credit|log|mark|rank)/i);
@@ -175,7 +174,7 @@ router.post('/api/preference', withAPILogin, (req, res) => {
     });
 });
 
-router.get('/register', (req, res) => {
+router.get('/register', async (req, res) => {
     res.redirect('/login');
 })
 

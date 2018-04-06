@@ -53,19 +53,19 @@ app.use(favicon(path.join(__dirname, '/public/images/favicon.ico')));
 app.use('/public', express.static(path.join(__dirname, '/public')));
 app.use('/', account_route);
 
-app.get('/', (req, res) => {
+app.get('/', async (req, res) => {
     res.redirect('home');
 });
 
-app.get('/home', withLogin, (req, res) => {
+app.get('/home', withLogin, async (req, res) => {
     res.render('home');
 });
 
-app.get('/user', withLogin, (req, res) => {
+app.get('/user', withLogin, async (req, res) => {
     res.render('user');
 });
 
-app.get('/settings', withLogin, (req, res) => {
+app.get('/settings', withLogin, async (req, res) => {
     res.render('settings');
 });
 
