@@ -103,25 +103,22 @@ function buildMarkview(all) {
         }
         return res;
     }
-    function buildCellWithTooltip(data, tip, mark) {
-        return '<td' + mark + '><div data-html="true" data-toggle="tooltip" title="' + cl(tip) + '">' + data + '</div></td>';
-    }
     let marks = JSON.parse(puser.mark);
     let limit = (all || marks.length <= 30) ? 0 : marks.length - 30;
     $("#mark-table-data").find('tbody').html("");
     if (marks.length > 0)
         for (let i = marks.length - 1; i >= limit; i--) {
-            let summary = '<b>Comment:</b><br>' + marks[i].comment + '<br>' +
+            let tip = '<b>Comment:</b><br>' + marks[i].comment + '<br>' +
                 '<b>Examiner:</b><br>' + marks[i].correcteur + '<br>' +
                 '<b>Date:</b><br>' + marks[i].date + '<br>' +
                 '<b>Mark:</b><br>' + marks[i].final_note + '<br>' +
                 '<b>Activity:</b><br>' + marks[i].title + ' (' + marks[i].codeacti + ')<br>' +
                 '<b>Module:</b><br>' + marks[i].titlemodule + ' (' + marks[i].codemodule + ')<br>'
-            let tab = '<tr class="center">' +
+            let tab = '<tr class="center" data-html="true" data-toggle="tooltip" title="' + cl(tip) + '">' +
                 '<td>' + marks[i].date.slice(0, 7) + '</td>' +
-                buildCellWithTooltip(marks[i].codemodule, marks[i].titlemodule, '') +
+                '<td>' + marks[i].codemodule + '</td>' +
                 '<td>' + marks[i].title + '</td>' +
-                buildCellWithTooltip(marks[i].final_note, summary, ' mark="' + marks[i].final_note + '"') +
+                '<td mark="' + marks[i].final_note + '">' + marks[i].final_note + '</td>' +
                 '</tr>'
             $("#mark-table-data").find('tbody').append(tab);
         }
