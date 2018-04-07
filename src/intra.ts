@@ -91,7 +91,7 @@ async function fillDb(email?: string) {
     con.query(queryString, [email], (err, result) => {
         if (err) throw err;
         for (let i = 0; i < result.length; ++i) {
-            logger.info("(intra) Planned to fill " + result[i].email + " in " + (i * 60 * 1000) + " seconds");
+            logger.info("(intra) Planned to fill " + result[i].email + " in " + (i * 60) + " seconds");
             setTimeout(() => {
                 logger.info("(intra) Filling " + result[i].email);
                 let row = result[i]
