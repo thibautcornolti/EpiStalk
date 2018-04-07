@@ -8,6 +8,12 @@ Array.prototype.remove = function (from, to) {
     return this.push.apply(this, rest);
 };
 
+$.urlParam = function (name) {
+    let results = new RegExp('[\?&]' + name + '=([^&#]*)')
+        .exec(window.location.href);
+    return (results) ? decodeURIComponent(results[1]) : undefined;
+};
+
 Object.size = function () {
     let count = 0;
     for (i in this)
@@ -26,9 +32,12 @@ $(document).ready(function () {
                 users[i].firstname = users[i].email.split('.')[0].toUpperCase();
             }
             $(".spinner-leaderboard").remove();
-            buildSortedLeaderboardBy("gpa");
+            buildSortedLeaderboardBy("gpa", false);
             genDropdownFilter("promo");
             genDropdownFilter("city");
+            $(document).ready(function () {
+                buildSortedLeaderboardBy("gpa", false);
+            });
         })
     })
 });
@@ -86,14 +95,14 @@ function appendRow(n, newUser) {
 }
 
 var lastTerm;
-var reverse;
-function buildSortedLeaderboardBy(term) {
-    if (reverse === undefined)
-        reverse = false;
+var reverse = false;
+function buildSortedLeaderboardBy(term, forceReverse) {
     if (lastTerm == term)
         reverse = !reverse;
     if (term === undefined)
         term = lastTerm;
+    if (forceReverse !== undefined)
+        reverse = forceReverse
     lastTerm = term;
     let refs = {
         "gpa": function (a, b) { return parseFloat(b.gpa) - parseFloat(a.gpa); },
@@ -110,14 +119,14 @@ function showFilteredMessage() {
     for (let i in dropdownFilter) {
         if (dropdownFilter[i].length) {
             $("#dropdown-filter-small").text("Filter applied!")
-            return ;
+            return;
         }
     }
 }
 
 var filter = [];
 var dropdownFilter = {};
-function appendRowIfFilter(n, newUser) {
+function matchWithFilter(newUser) {
     let str = "";
     for (u in newUser)
         str += newUser[u];
@@ -125,7 +134,7 @@ function appendRowIfFilter(n, newUser) {
     if (filter.length)
         for (let i = 0; i < filter.length; ++i)
             if (str.indexOf(filter[i]) < 0)
-                return;
+                return false;
     if (Object.size(dropdownFilter)) {
         let dropdownFilterMatch = {}
         for (name in dropdownFilter) {
@@ -135,32 +144,36 @@ function appendRowIfFilter(n, newUser) {
                         dropdownFilterMatch[name] = 1;
             } else dropdownFilterMatch[name] = 1;
         }
-        for (name in dropdownFilter) {
+        for (name in dropdownFilter)
             if (!dropdownFilterMatch[name])
-                return;
-        }
-        appendRow(n, newUser);
-    } else appendRow(n, newUser);
+                return false;
+    }
+    return true;
 }
 
 function buildSortedLeaderboard(term, sorter, reverse) {
     clearLeaderboard();
-    users.sort(sorter);
-    let count = 1;
-    if (reverse) {
-        users.reverse();
-        for (let i = 0; i < users.length; ++i)
-            if (users[i][term])
-                count++;
-    }
-    reverseLeaderboard = reverse;
-    countLeaderboard = count;
+    let usersLeaderboard = []
     for (let i = 0; i < users.length; ++i)
         if (users[i][term])
-            appendRowIfFilter(undefined, users[i]);
+            usersLeaderboard.push(users[i]);
+    usersLeaderboard.sort(sorter);
+    if (reverse)
+        usersLeaderboard.reverse();
     for (let i = 0; i < users.length; ++i)
         if (!users[i][term])
-            appendRowIfFilter("?", users[i]);
+            usersLeaderboard.push(users[i]);
+    reverseLeaderboard = reverse;
+    countLeaderboard = 1;
+    if (reverse) {
+        countLeaderboard = 0;
+        for (let i = 0; i < usersLeaderboard.length; ++i)
+            if (usersLeaderboard[i][term] && matchWithFilter(usersLeaderboard[i]))
+                countLeaderboard++;
+    }
+    for (let i = 0; i < usersLeaderboard.length; ++i)
+        if (matchWithFilter(usersLeaderboard[i]))
+            appendRow((usersLeaderboard[i][term]) ? undefined : "?", usersLeaderboard[i]);
     enableLink();
     showFilteredMessage();
 }
@@ -179,30 +192,8 @@ function removeDropdownFilter(name, filter) {
             dropdownFilter[name].remove(i);
 }
 
-function genDropdownFilter(name) {
-    let rawVal = [];
-    for (let i = 0; i < users.length; ++i)
-        rawVal.push(users[i][name])
-    let rawHtml = "";
-    let val = Array.from(new Set(rawVal));
-    val.sort();
-    for (let i = 0; i < val.length; ++i)
-        rawHtml = rawHtml + "<li><a href='#' vchecked='false' value='" + val[i] + "'>" + val[i] + "</a></li>"
-    $("#dropdown-filter-" + name + " > ul").html(rawHtml);
+function genDropdownFilterEvent(name) {
     $(document).ready(function () {
-        let eachRemaining = $("#dropdown-filter-" + name + " > ul > li").nextAll().length
-        $("#dropdown-filter-" + name + " > ul > li").each(function () {
-            let a = $(this).children("a");
-            val = a.attr("value");
-            if (user[name] && user[name].indexOf(val) == 0) {
-                a.attr("vchecked", "true");
-                a.html("<span class='glyphicon glyphicon-ok' style='margin-right: 10%;'></span>" + val);
-                addDropdownFilter(name, val.toLowerCase());
-            }
-            if (--eachRemaining == 0) {
-                buildSortedLeaderboardBy();
-            }
-        });
         $("#dropdown-filter-" + name + " > ul > li").on("click", function (e) {
             let a = $(this).children("a");
             val = a.attr("value");
@@ -219,6 +210,47 @@ function genDropdownFilter(name) {
             e.stopPropagation();
         });
     });
+}
+
+function genDropdownFilterCheck(name) {
+    $(document).ready(function () {
+        if ($.urlParam(name) === undefined)
+            $("#dropdown-filter-" + name + " > ul > li").each(function () {
+                let a = $(this).children("a");
+                val = a.attr("value");
+                if (user[name] && user[name].indexOf(val) == 0) {
+                    a.attr("vchecked", "true");
+                    a.html("<span class='glyphicon glyphicon-ok' style='margin-right: 10%;'></span>" + val);
+                    addDropdownFilter(name, val.toLowerCase());
+                }
+            });
+        else
+            $("#dropdown-filter-" + name + " > ul > li").each(function () {
+                let a = $(this).children("a");
+                val = a.attr("value");
+                upf = $.urlParam(name).split(',')
+                for (let i = 0; i < upf.length; ++i)
+                    if (upf[i].indexOf(val) == 0) {
+                        a.attr("vchecked", "true");
+                        a.html("<span class='glyphicon glyphicon-ok' style='margin-right: 10%;'></span>" + val);
+                        addDropdownFilter(name, val.toLowerCase());
+                    }
+            });
+    });
+}
+
+function genDropdownFilter(name) {
+    let rawVal = [];
+    for (let i = 0; i < users.length; ++i)
+        rawVal.push(users[i][name])
+    let rawHtml = "";
+    let val = Array.from(new Set(rawVal));
+    val.sort();
+    for (let i = 0; i < val.length; ++i)
+        rawHtml = rawHtml + "<li><a href='#' vchecked='false' value='" + val[i] + "'>" + val[i] + "</a></li>"
+    $("#dropdown-filter-" + name + " > ul").html(rawHtml);
+    genDropdownFilterEvent(name);
+    genDropdownFilterCheck(name);
 }
 
 $(document).ready(function () {
