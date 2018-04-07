@@ -8,7 +8,7 @@ import ejs = require('ejs');
 import tcpPortUsed = require('tcp-port-used');
 
 
-import { con, hostSQL, hostname, port, secretCookie, createConnection } from './vars';
+import { setMaster, con, hostSQL, hostname, port, secretCookie, createConnection, isMaster } from './vars';
 
 function handleDisconnect() {
     createConnection();
@@ -77,7 +77,10 @@ async function startServer(offset = 0) {
             startServer(offset + 1);
         else {
             app.listen(port + offset, hostname, function () {
+                if (offset == 0)
+                    setMaster();
                 logger.info("(http) Server launched on http://" + hostname + ":" + (port + offset) + "");
+                console.log(isMaster)
             });
         }
     });

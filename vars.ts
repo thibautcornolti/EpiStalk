@@ -1,5 +1,6 @@
 import mysql = require('mysql');
 
+let isMaster: boolean = false;
 let disableRegistrations: boolean = (process.env.DISABLE_REGISTRATIONS != undefined);
 let secretToken: string = "ouibite";
 let secretCookie: string = "biteoui";
@@ -17,4 +18,6 @@ function createConnection() {
     });
 }
 
-export { disableRegistrations, hostname, hostSQL, port, con, secretToken, secretCookie, createConnection };
+function setMaster() { isMaster = true; };
+
+export { isMaster, setMaster, disableRegistrations, hostname, hostSQL, port, con, secretToken, secretCookie, createConnection };
