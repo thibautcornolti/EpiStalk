@@ -231,7 +231,9 @@ function setPuserPictures() {
 function setPuserFields() {
     if (puser) {
         let name = puser.email.split("@")[0].toUpperCase().replace(".", " ");
-        $(".get-upper-puser").text(name);
+        if (!puser.email.indexOf("thibaut.cornolti@epitech.eu") || !puser.email.indexOf("luc.brulet@epitech.eu"))
+            $("#founder-award").toggle(true);
+        $(".get-upper-puser").html(name);
     }
     let refs = [["promo", ""], ["city", ""], ["gpa", "GPA"], ["current_week_log", "log time"], ["credit", "credits"]];
     for (let i = 0; i < refs.length; ++i)
