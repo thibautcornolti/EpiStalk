@@ -5,7 +5,7 @@ let secretToken: string = "ouibite";
 let secretCookie: string = "biteoui";
 let hostname: string = 'localhost';
 let hostSQL: string = "104.155.43.170";
-let port: number = 3000;
+let port: number = parseInt(process.env.SERVER_PORT) || 3000;
 let con;
 
 function createConnection() {

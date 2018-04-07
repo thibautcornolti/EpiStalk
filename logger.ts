@@ -19,7 +19,7 @@ const logger = new (winston.Logger)({
             datePattern: 'YYYY-MM-DD',
             prepend: true,
             level: 'verbose',
-          })
+        })
     ]
 });
 
