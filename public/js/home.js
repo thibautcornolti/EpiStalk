@@ -81,9 +81,7 @@ function appendRow(n, newUser) {
     let gpa = buildCell("gpa", "GPA", false);
     let log = buildCell("current_week_log", "log time", false);
     let tab = '<tr data-html="true" title="<img src=\'https://cdn.local.epitech.eu/userprofil/profilview/' + newUser.email.split("@")[0] + '.png\'>" data-toggle="tooltip" login="' + newUser.email + '" class="center user-leaderboard">' +
-        '<th class="center" scope="row">' +
-        (!newUser.email.indexOf("thibaut.cornolti@epitech.eu") || !newUser.email.indexOf("luc.brulet@epitech.eu") ? "<span data-toggle='tooltip' title='The big founder :D' class='glyphicon glyphicon-asterisk'></span>" : n) +
-        '</th>' +
+        '<th class="center" scope="row">' + n + '</th>' +
         '<td>' + newUser.firstname + '</td>' +
         '<td>' + newUser.lastname + '</td>' +
         '<td>' + newUser.city + '</td>' +
