@@ -5,6 +5,8 @@ import path = require('path');
 import session = require('express-session');
 import bodyParser = require('body-parser');
 import ejs = require('ejs');
+import tcpPortUsed = require('tcp-port-used');
+
 
 import { con, hostSQL, hostname, port, secretCookie, createConnection } from './vars';
 
@@ -13,14 +15,14 @@ function handleDisconnect() {
 
     con.connect((err, con) => {
         if (err) {
-            logger.error("(sql) "+err.message);
+            logger.error("(sql) " + err.message);
             setTimeout(handleDisconnect, 2000);
         }
         else logger.info("(sql) Successfully connected to " + hostSQL + "!");
     });
 
     con.on('error', function (err) {
-        logger.error("(sql) "+err.message);
+        logger.error("(sql) " + err.message);
         if (err.code === 'PROTOCOL_CONNECTION_LOST')
             handleDisconnect();
         else
@@ -69,8 +71,18 @@ app.get('/settings', withLogin, async (req, res) => {
     res.render('settings');
 });
 
-app.listen(port, hostname, function () {
-    logger.info("(http) Server launched on http://" + hostname + ":" + port + "");
-});
+async function startServer(offset = 0) {
+    tcpPortUsed.check(port + offset, hostname).then((inUse) => {
+        if (inUse)
+            startServer(offset + 1);
+        else {
+            app.listen(port + offset, hostname, function () {
+                logger.info("(http) Server launched on http://" + hostname + ":" + (port + offset) + "");
+            });
+        }
+    });
+}
+
+startServer();
 
 export = app;
