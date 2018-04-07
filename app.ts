@@ -77,10 +77,11 @@ async function startServer(offset = 0) {
             startServer(offset + 1);
         else {
             app.listen(port + offset, hostname, function () {
-                if (offset == 0)
+                if (offset == 0) {
                     setMaster();
+                    logger.info("(master) Server is master!")
+                }
                 logger.info("(http) Server launched on http://" + hostname + ":" + (port + offset) + "");
-                console.log(isMaster)
             });
         }
     });
