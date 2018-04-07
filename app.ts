@@ -34,7 +34,8 @@ handleDisconnect();
 
 
 import { withLogin, withLog } from './src/middleware';
-import account_route = require('./routes/account');
+import api_route = require('./routes/api');
+import render_route = require('./routes/render');
 import tasks = require('./src/tasks');
 import logger = require('./logger');
 
@@ -53,23 +54,8 @@ app.use(withLog);
 
 app.use(favicon(path.join(__dirname, '/public/images/favicon.ico')));
 app.use('/public', express.static(path.join(__dirname, '/public')));
-app.use('/', account_route);
-
-app.get('/', async (req, res) => {
-    res.redirect('home');
-});
-
-app.get('/home', withLogin, async (req, res) => {
-    res.render('home');
-});
-
-app.get('/user', withLogin, async (req, res) => {
-    res.render('user');
-});
-
-app.get('/settings', withLogin, async (req, res) => {
-    res.render('settings');
-});
+app.use('/', api_route);
+app.use('/', render_route);
 
 async function startServer(offset = 0) {
     tcpPortUsed.check(port + offset, hostname).then((inUse) => {

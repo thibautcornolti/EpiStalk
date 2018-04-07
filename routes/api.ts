@@ -1,6 +1,6 @@
 import express = require('express');
 var router = express.Router();
-import { withLog, withLogin, withAPILogin } from '../src/middleware';
+import { withAPILogin } from '../src/middleware';
 import {
     login, register, getUser, getAllUsers, getUserWithEmail,
     newPassword, hasAutoLogin, setPreferences, setPreference,
@@ -8,7 +8,6 @@ import {
 } from '../src/account';
 import { getLoginWithAutologin, fillDb } from '../src/intra'
 import { con, disableRegistrations } from '../vars';
-import { error } from 'util';
 
 router.post('/api/login', async (req, res) => {
     if (req.body.email == undefined || req.body.email.length == 0 ||
@@ -70,25 +69,6 @@ router.get('/api/users', withAPILogin, async (req, res) => {
     });
 });
 
-router.get('/login', async (req, res) => {
-    let token = req.cookies.token
-    if (!token)
-        res.render('login');
-    else {
-        getUser(token, (err, user) => {
-            if (err)
-                res.render('login');
-            else
-                res.redirect('home');
-        });
-    }
-});
-
-router.get('/logout', async (req, res) => {
-    res.setHeader("Set-Cookie", "token=;expires=Thu, 01 Jan 1970 00:00:01 GMT");
-    res.redirect('/');
-});
-
 router.post('/api/register', async (req, res) => {
     if (req.body.email == undefined || req.body.email.length == 0 ||
         req.body.pass == undefined || req.body.pass.length == 0) {
@@ -97,7 +77,7 @@ router.post('/api/register', async (req, res) => {
     }
     let reg = req.body.email.match(/[a-z-]*[0-9]*\.[a-z-]*@epitech.eu/i)
     if (!reg || reg[0] != req.body.email)
-        res.status(403).send({ warning: "Invalid email" });
+        res.status(403).send({ warning: "Invalid epitech email" });
     else if (disableRegistrations)
         res.status(403).send({ error: "Registrations are disabled!" });
     else
@@ -173,9 +153,5 @@ router.post('/api/preference', withAPILogin, async (req, res) => {
             });
     });
 });
-
-router.get('/register', async (req, res) => {
-    res.redirect('/login');
-})
 
 export = router;

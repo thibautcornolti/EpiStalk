@@ -3,7 +3,7 @@ $(document).ready(function () {
         console.log($(this).val())
     });
 
-    $('.message a').click(function () {
+    $('.toggle-form').click(function () {
         toggleForm();
     });
     
