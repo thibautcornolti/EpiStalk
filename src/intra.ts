@@ -19,6 +19,10 @@ function getData(autologin: string, callback: (data: { [key: string]: any } | Er
                 logger.error(err);
                 return callback(err);
             }
+            if (data.message && (data.message.indexOf("Votre code d'authentification n'existe pas") == 0 || data.message.indexOf("Your authentication code does not exist or has expired.") == 0)) {
+                logger.info("(intra) Wrong autologin detected");
+                return callback(Error("Autologin expired!"));
+            }
             let noteUrl = autologin+"/user/"+data.login+"/notes/?format=json";
             let req = https.get(noteUrl, (res) => {
                 let rawData: string = "";
@@ -78,7 +82,7 @@ function setData(id, data, callback) {
     let rank = data.rank;
     let mark = data.mark;
     con.query(queryString, [city, promo, gpa, rank, mark, credit, current_week_log, id], (err, result) => {
-        if (err) throw err;
+        if (err) return logger.error("(sql) Error: " + err.message);
         callback();
     });
 }
@@ -89,7 +93,7 @@ async function fillDb(email?: string) {
         queryString += " WHERE email = ?";
     logger.info("(intra) Starting to fill the database");
     con.query(queryString, [email], (err, result) => {
-        if (err) throw err;
+        if (err) return logger.error("(sql) Error: " + err.message);
         for (let i = 0; i < result.length; ++i) {
             logger.info("(intra) Planned to fill " + result[i].email + " in " + (i * 60) + " seconds");
             setTimeout(() => {
@@ -97,9 +101,10 @@ async function fillDb(email?: string) {
                 let row = result[i]
                 if (row.autologin)
                     getData(row.autologin, (data) => {
-                        if (data instanceof Error)
+                        if (data instanceof Error) {
+                            logger.error("(intra) Error: " + data);
                             setPreferences(row.email, undefined, {}, () => { });
-                        else
+                        } else
                             setData(row.id, data, () => {
                                 logger.info("(intra) Filled " + result[i].email);
                             });
