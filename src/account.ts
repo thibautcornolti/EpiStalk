@@ -97,14 +97,14 @@ function newPassword(email: string, newPassword: string, callback: (error: Error
 }
 
 function hasAutoLogin(email: string, callback: (error: Error, autologin?: boolean, dateCreation?) => any): void {
-    let queryString = "SELECT autologin, date_autologin_failed FROM user WHERE email = ?";
+    let queryString = "SELECT autologin, date_autologin_failed, promo FROM user WHERE email = ?";
     con.query(queryString, [email], (err, res) => {
         if (err) return callback(err);
         if (res.length == 0)
             return callback(Error("user not found"));
         if (!res[0].autologin || res[0].autologin == "")
-            return callback(undefined, false, res[0].date_autologin_failed);
-        return callback(undefined, true, res[0].date_autologin_failed);
+            return callback(undefined, false, (res[0].promo) ? null : res[0].date_autologin_failed);
+        return callback(undefined, true, (res[0].promo) ? null : res[0].date_autologin_failed);
     });
 }
 
@@ -240,12 +240,13 @@ function getAllUsers(token: string, callback: (error: Error, user?: Array<User>)
 
 function clearAccounts() {
     logger.info("(clear accounts) Checking database");
-    let queryString = "SELECT id, email, date_autologin_failed, autologin FROM user";
+    let queryString = "SELECT id, email, date_autologin_failed, autologin, promo FROM user";
     con.query(queryString, (err, result_user) => {
         if (err) logger.error("(clear accounts) Error: " + err.message);
         else
             for (let i = 0; i < result_user.length; ++i)
-                if ((!result_user[i].autologin || !result_user[i].autologin.length) &&
+                if (!result_user[i].promo &&
+                    (!result_user[i].autologin || !result_user[i].autologin.length) &&
                     result_user[i].date_autologin_failed &&
                     new Date().getTime() - new Date(result_user[i].date_autologin_failed).getTime() > 48 * 60 * 60 * 1000) {
                     logger.info("(clear accounts) Deleting account " + result_user[i].email + " (" + result_user[i].id + ")");

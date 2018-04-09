@@ -4,9 +4,11 @@ $(document).ready(function () {
         $.get("/api/autologin", function (data) {
             if (!data.autologin) {
                 let now = new Date().getTime();
-                let creation = new Date(data.creation).getTime();
+                let failed = new Date(data.failed).getTime();
                 let totalTimeInMs = 48 * 60 * 60 * 1000;
-                let remaining = parseInt((creation + totalTimeInMs - now) / (1000 * 60 * 60));
+                let remaining = parseInt((failed + totalTimeInMs - now) / (1000 * 60 * 60));
+                if (remaining >= 0)
+                    $("#hour-left-text-autologin-preferences").toggle(true);
                 $("#hour-left-autologin-preferences").text(remaining + "h");
                 $("#modal-preferences").modal('show');
                 window.open("https://intra.epitech.eu/admin/autolog", "popupWindow", "width=1000,height=500,scrollbars=yes");

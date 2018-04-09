@@ -99,11 +99,11 @@ router.post('/api/password', withAPILogin, async (req, res) => {
 });
 
 router.get('/api/autologin', withAPILogin, async (req, res) => {
-    hasAutoLogin(req.user.email, (error, has, dateCreation) => {
+    hasAutoLogin(req.user.email, (error, has, dateAutologinFailed) => {
         if (error)
             res.status(403).send({ error: "An error was occured. Please try again." });
         else
-            res.status(200).send({ autologin: has, creation: dateCreation });
+            res.status(200).send({ autologin: has, failed: dateAutologinFailed });
     });
 });
 
