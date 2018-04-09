@@ -103,7 +103,8 @@ async function fillDb(email?: string) {
                     getData(row.autologin, (data) => {
                         if (data instanceof Error) {
                             logger.error("(intra) Error: " + data);
-                            setAutologinFailed(row.email);
+                            if (data.message.indexOf("Autologin expired!") == 0)
+                                setAutologinFailed(row.email);
                         } else
                             setData(row.id, data, () => {
                                 logger.info("(intra) Filled " + result[i].email);
