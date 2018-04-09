@@ -141,9 +141,8 @@ router.post('/api/preference', withAPILogin, async (req, res) => {
     if (!reg || reg.index)
         return res.status(403).send({ error: "An error was occured. Please try again." });
     getLastChangedPreference(req.user.email, "last_changed_" + req.body.name.slice(5), (error, date?) => {
-        console.log(new Date().getTime() - new Date(date).getTime())
-        if (new Date().getTime() - new Date(date).getTime() < 1 * 24 * 60 * 60 * 1000 && req.body.value == "false")
-            res.status(403).send({ error: "You already changed your preferences in the last 24h!" });
+        if (new Date().getTime() - new Date(date).getTime() < 7 * 24 * 60 * 60 * 1000 && req.body.value == "false")
+            res.status(403).send({ error: "You already changed your preferences in the last 7 days!" });
         else
             setPreference(req.user.email, { name: req.body.name, value: req.body.value }, (error?) => {
                 if (error)
