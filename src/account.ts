@@ -1,6 +1,7 @@
 import bcrypt = require('bcrypt');
 import jwt = require('jsonwebtoken');
 import zlib = require('zlib');
+import logger = require('../logger')
 import { secretToken, con } from '../vars';
 import { fillDb } from './intra';
 
@@ -95,21 +96,30 @@ function newPassword(email: string, newPassword: string, callback: (error: Error
     });
 }
 
-function hasAutoLogin(email: string, callback: (error: Error, autologin?: boolean) => any): void {
-    let queryString = "SELECT autologin FROM user WHERE email = ?";
+function hasAutoLogin(email: string, callback: (error: Error, autologin?: boolean, dateCreation?) => any): void {
+    let queryString = "SELECT autologin, date_autologin_failed FROM user WHERE email = ?";
     con.query(queryString, [email], (err, res) => {
         if (err) return callback(err);
         if (res.length == 0)
             return callback(Error("user not found"));
         if (!res[0].autologin || res[0].autologin == "")
-            return callback(undefined, false);
-        return callback(undefined, true);
+            return callback(undefined, false, res[0].date_autologin_failed);
+        return callback(undefined, true, res[0].date_autologin_failed);
+    });
+}
+
+function setAutologinFailed(email: string) {
+    logger.info("(autologin) Setting autologin failed for " + email);
+    setPreferences(email, undefined, {}, (err) => {
+        if (err) logger.error("(autologin) Error: " + err.message);
+        else
+            logger.info("(autologin) Autologin set as failed for " + email);
     });
 }
 
 function setPreferences(email: string, autologin: string, show: { [key: string]: boolean }, callback: (error?: Error) => any): void {
     let p = (val) => (val && val != "false") ? 1 : 0;
-    let queryString = "UPDATE user SET autologin = ?, show_gpa = ?, show_credit = ?, show_log = ?, show_mark = ?, show_rank = ? WHERE email = ?";
+    let queryString = "UPDATE user SET autologin = ?, date_autologin_failed = " + (autologin ? "NULL" : "NOW()") + ", show_gpa = ?, show_credit = ?, show_log = ?, show_mark = ?, show_rank = ? WHERE email = ?";
     con.query(queryString, [
         autologin, p(show.gpa), p(show.credit), p(show.log),
         p(show.mark), p(show.rank), email,
@@ -134,7 +144,7 @@ function getLastChangedPreference(email: string, preferenceName: string, callbac
 
 function setPreference(email: string, preference: { [key: string]: any }, callback: (error?: Error) => any): void {
     let p = (val) => (val && val != "false") ? 1 : 0;
-    let queryString = "UPDATE user SET " + preference.name + " = ?, last_changed_"+preference.name.slice(5)+" = NOW() WHERE email = ?";
+    let queryString = "UPDATE user SET " + preference.name + " = ?, last_changed_" + preference.name.slice(5) + " = NOW() WHERE email = ?";
     con.query(queryString, [
         p(preference.value), email,
     ], (err, res) => {
@@ -228,8 +238,30 @@ function getAllUsers(token: string, callback: (error: Error, user?: Array<User>)
     });
 };
 
+function clearAccounts() {
+    logger.info("(clear accounts) Checking database");
+    let queryString = "SELECT id, email, date_autologin_failed, autologin FROM user";
+    con.query(queryString, (err, result_user) => {
+        if (err) logger.error("(clear accounts) Error: " + err.message);
+        else
+            for (let i = 0; i < result_user.length; ++i)
+                if ((!result_user[i].autologin || !result_user[i].autologin.length) &&
+                    result_user[i].date_autologin_failed &&
+                    new Date().getTime() - new Date(result_user[i].date_autologin_failed).getTime() > 48 * 60 * 60 * 1000) {
+                    logger.info("(clear accounts) Deleting account " + result_user[i].email + " (" + result_user[i].id + ")");
+                    let queryString = "DELETE FROM user WHERE id = ?";
+                    con.query(queryString, [result_user[i].id], (err) => {
+                        if (err) logger.error("(clear accounts) Error: " + err.message);
+                        else
+                            logger.info("(clear accounts) Account " + result_user[i].email + " (" + result_user[i].id + ") deleted");
+                    });
+                }
+        logger.info("(clear accounts) Database checked");
+    });
+}
+
 export {
     register, login, getUser, getUserWithEmail, getAllUsers,
     newPassword, hasAutoLogin, setPreferences, setPreference,
-    getLastChangedPreference,
+    getLastChangedPreference, clearAccounts, setAutologinFailed
 }

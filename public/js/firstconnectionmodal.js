@@ -3,6 +3,11 @@ $(document).ready(function () {
     $("#first-connection-modal").load("public/html/firstconnectionmodal.html", function () {
         $.get("/api/autologin", function (data) {
             if (!data.autologin) {
+                let now = new Date().getTime();
+                let creation = new Date(data.creation).getTime();
+                let totalTimeInMs = 48 * 60 * 60 * 1000;
+                let remaining = parseInt((creation + totalTimeInMs - now) / (1000 * 60 * 60));
+                $("#hour-left-autologin-preferences").text(remaining + "h");
                 $("#modal-preferences").modal('show');
                 window.open("https://intra.epitech.eu/admin/autolog", "popupWindow", "width=1000,height=500,scrollbars=yes");
                 $('#close-preferences').on('click', clickClosePreferences);
@@ -20,7 +25,7 @@ function clickClosePreferences() {
 
 function clickSavePreferences() {
     if ($(this).hasClass("disabled"))
-        return ;
+        return;
     let autologin = $("#input-autologin-preferences").val();
     let show_gpa = $('#checkbox-gpa-preferences').is(":checked");
     let show_credit = $('#checkbox-credits-preferences').is(":checked");

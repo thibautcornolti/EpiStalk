@@ -2,7 +2,7 @@ import https = require('https');
 import zlib = require('zlib');
 import vars = require('../vars');
 import logger = require('../logger');
-import { setPreferences } from './account';
+import { setAutologinFailed } from './account';
 
 var con = vars.con;
 
@@ -23,7 +23,7 @@ function getData(autologin: string, callback: (data: { [key: string]: any } | Er
                 logger.info("(intra) Wrong autologin detected");
                 return callback(Error("Autologin expired!"));
             }
-            let noteUrl = autologin+"/user/"+data.login+"/notes/?format=json";
+            let noteUrl = autologin + "/user/" + data.login + "/notes/?format=json";
             let req = https.get(noteUrl, (res) => {
                 let rawData: string = "";
                 res.on("data", (d) => { rawData += d; });
@@ -103,12 +103,14 @@ async function fillDb(email?: string) {
                     getData(row.autologin, (data) => {
                         if (data instanceof Error) {
                             logger.error("(intra) Error: " + data);
-                            setPreferences(row.email, undefined, {}, () => { });
+                            setAutologinFailed(row.email);
                         } else
                             setData(row.id, data, () => {
                                 logger.info("(intra) Filled " + result[i].email);
                             });
                     });
+                else
+                    logger.info("(intra) No autologin for " + result[i].email);
             }, i * 60 * 1000);
         }
     });

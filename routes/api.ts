@@ -81,7 +81,7 @@ router.post('/api/register', async (req, res) => {
     else if (disableRegistrations)
         res.status(403).send({ error: "Registrations are disabled!" });
     else
-        register(req.body.email, req.body.pass, (error?) => {
+        register(req.body.email.toLowerCase(), req.body.pass, (error?) => {
             if (error)
                 res.status(403).send({ error: "You already have an account. Please login." });
             else
@@ -99,11 +99,11 @@ router.post('/api/password', withAPILogin, async (req, res) => {
 });
 
 router.get('/api/autologin', withAPILogin, async (req, res) => {
-    hasAutoLogin(req.user.email, (error, has) => {
+    hasAutoLogin(req.user.email, (error, has, dateCreation) => {
         if (error)
             res.status(403).send({ error: "An error was occured. Please try again." });
         else
-            res.status(200).send({ autologin: has });
+            res.status(200).send({ autologin: has, creation: dateCreation });
     });
 });
 
