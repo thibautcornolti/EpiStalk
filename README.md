@@ -1,1 +1,7 @@
 # EpiStalk
+
+## Usage
+
+```
+$> ./start.sh
+```
